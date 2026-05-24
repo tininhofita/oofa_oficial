@@ -1,10 +1,10 @@
-import type { Metadata } from 'next'
-import { LoginForm } from './LoginForm'
-import './Login.css'
+import type { Metadata } from "next";
+import { LoginForm } from "./LoginForm";
+import "./Login.css";
 
 export const metadata: Metadata = {
-  title: 'Entrar',
-}
+  title: "Entrar",
+};
 
 export default function LoginPage() {
   return (
@@ -12,11 +12,8 @@ export default function LoginPage() {
       {/* Painel de marca — visível apenas em telas maiores */}
       <aside className="login__brand" aria-hidden="true">
         <div className="login__brand-content">
-          <span className="login__brand-logo">Oofa</span>
-          <p className="login__brand-tagline">
-            Gestão inteligente para o seu e-commerce.
-            Bling e NuvemShop integrados em um único lugar.
-          </p>
+          <span className="login__brand-logo">OOfa</span>
+          <p className="login__brand-tagline">Gestão inteligente.</p>
         </div>
         <div className="login__brand-decoration login__brand-decoration--1" />
         <div className="login__brand-decoration login__brand-decoration--2" />
@@ -26,7 +23,9 @@ export default function LoginPage() {
       {/* Painel do formulário */}
       <section className="login__form-side">
         {/* Logo mobile */}
-        <span className="login__mobile-logo" aria-label="Oofa ERP">Oofa</span>
+        <span className="login__mobile-logo" aria-label="Oofa ERP">
+          OOfa
+        </span>
 
         <div className="login__form-container">
           <header className="login__form-header">
@@ -40,9 +39,10 @@ export default function LoginPage() {
         </div>
 
         <footer className="login__footer">
-          Oofa ERP &copy; {new Date().getFullYear()}
+          OOfa ERP &copy; {new Date().getFullYear()} - Desenvolvido por
+          Safitamemo Produções.
         </footer>
       </section>
     </main>
-  )
+  );
 }

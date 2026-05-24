@@ -1,0 +1,41 @@
+/* ============================================================
+   ESTILOS GERAIS DO LAYOUT DO APP (ÁREA LOGADA)
+   Utiliza a metodologia BEM com nomenclatura em Português BR.
+   ============================================================ */
+
+.layout-app {
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--color-bg);
+}
+
+.layout-app__principal {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.layout-app__conteudo {
+  flex: 1;
+  padding: var(--space-6);
+  overflow-y: auto;
+  background-color: var(--color-bg);
+}
+
+/* Ajustes para telas muito pequenas (Mobile) */
+@media (max-width: 768px) {
+  .layout-app {
+    flex-direction: column;
+  }
+
+  /* No mobile a barra lateral pode ficar recolhida ou flutuante */
+  .layout-app__conteudo {
+    padding: var(--space-4);
+  }
+}

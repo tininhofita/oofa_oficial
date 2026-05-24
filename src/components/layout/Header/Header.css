@@ -1,0 +1,126 @@
+/* ============================================================
+   ESTILOS DO CABEÇALHO (HEADER)
+   Utiliza a metodologia BEM com nomenclatura em Português BR.
+   ============================================================ */
+
+.cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--header-height);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 var(--space-6);
+  box-shadow: var(--shadow-sm);
+  z-index: 10;
+  position: relative;
+}
+
+.cabecalho__secao-esquerda {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.cabecalho__botao-alternar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--color-border);
+  color: var(--color-gray-500);
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.cabecalho__botao-alternar:hover {
+  background-color: var(--color-gray-50);
+  color: var(--color-primary);
+  border-color: var(--color-primary-light);
+}
+
+.cabecalho__titulo-pagina {
+  font-size: var(--fs-title-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.cabecalho__secao-direita {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.cabecalho__perfil-usuario {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.cabecalho__avatar-usuario {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-label);
+  border: 1px solid var(--color-primary-light);
+  object-fit: cover;
+}
+
+.cabecalho__detalhes-usuario {
+  display: flex;
+  flex-direction: column;
+}
+
+.cabecalho__nome-usuario {
+  font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+}
+
+.cabecalho__cargo-usuario {
+  font-size: var(--fs-caption);
+  color: var(--color-text-secondary);
+}
+
+.cabecalho__botao-sair {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: none;
+  border: 1px solid var(--color-border);
+  color: var(--color-gray-600);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--fs-label);
+  font-weight: var(--fw-medium);
+  transition: all var(--transition-fast);
+}
+
+.cabecalho__botao-sair:hover {
+  background-color: var(--color-danger-light);
+  border-color: var(--color-danger-border);
+  color: var(--color-danger);
+}
+
+.cabecalho__botao-sair svg {
+  stroke-width: 2;
+}
+
+/* Responsivo para telas pequenas */
+@media (max-width: 768px) {
+  .cabecalho__detalhes-usuario {
+    display: none;
+  }
+}

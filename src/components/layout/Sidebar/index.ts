@@ -1,0 +1,1 @@
+export { BarraLateral } from './Sidebar'

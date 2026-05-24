@@ -1,0 +1,220 @@
+/* ============================================================
+   ESTILOS DA BARRA LATERAL (SIDEBAR)
+   Utiliza a metodologia BEM com nomenclatura em Português BR.
+   ============================================================ */
+
+.barra-lateral {
+  width: var(--sidebar-width);
+  height: 100vh;
+  background-color: var(--color-brand);
+  color: var(--color-text-inverse);
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-xl);
+  transition: width var(--transition-normal);
+  overflow-x: hidden;
+  flex-shrink: 0;
+  z-index: 20;
+}
+
+/* Estado Recolhido da Barra Lateral */
+.barra-lateral--recolhida {
+  width: 72px;
+}
+
+.barra-lateral__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--header-height);
+  padding: 0 var(--space-4);
+  border-bottom: 1px solid var(--color-brand-mid);
+}
+
+.barra-lateral__logo-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+}
+
+.barra-lateral__logo {
+  font-size: var(--fs-title-sm);
+  font-weight: var(--fw-bold);
+  color: var(--color-text-inverse);
+  background: linear-gradient(135deg, var(--color-primary), #a5b4fc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: opacity var(--transition-fast);
+}
+
+/* Oculta o texto do logo e outros elementos quando recolhida */
+.barra-lateral--recolhida .barra-lateral__logo {
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+}
+
+.barra-lateral__navegacao {
+  flex: 1;
+  padding: var(--space-4) var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  overflow-y: auto;
+}
+
+/* Scrollbar estilizada e discreta para a Sidebar */
+.barra-lateral__navegacao::-webkit-scrollbar {
+  width: 4px;
+}
+
+.barra-lateral__navegacao::-webkit-scrollbar-thumb {
+  background-color: var(--color-brand-mid);
+  border-radius: var(--radius-full);
+}
+
+.barra-lateral__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-gray-300);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-medium);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  position: relative;
+}
+
+.barra-lateral__link:hover {
+  background-color: var(--color-brand-mid);
+  color: var(--color-text-inverse);
+}
+
+.barra-lateral__link--ativo {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-weight: var(--fw-semibold);
+}
+
+/* Quando recolhida, os links centram os ícones e escondem o texto */
+.barra-lateral--recolhida .barra-lateral__link {
+  justify-content: center;
+  padding: var(--space-3) 0;
+}
+
+.barra-lateral__icone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: inherit;
+}
+
+.barra-lateral__icone svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.barra-lateral__texto {
+  transition: opacity var(--transition-fast);
+}
+
+.barra-lateral--recolhida .barra-lateral__texto {
+  opacity: 0;
+  pointer-events: none;
+  display: none;
+}
+
+.barra-lateral__rodape {
+  padding: var(--space-4);
+  border-top: 1px solid var(--color-brand-mid);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.barra-lateral--recolhida .barra-lateral__rodape {
+  justify-content: center;
+  padding: var(--space-4) 0;
+}
+
+.barra-lateral__mini-perfil {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.barra-lateral__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-caption);
+  flex-shrink: 0;
+  border: 1px solid var(--color-brand-mid);
+}
+
+.barra-lateral__info-usuario {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.barra-lateral--recolhida .barra-lateral__info-usuario {
+  display: none;
+}
+
+.barra-lateral__nome-usuario {
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  color: var(--color-text-inverse);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  text-transform: uppercase;
+}
+
+.barra-lateral__email-usuario {
+  font-size: 10px;
+  color: var(--color-gray-400);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* Tooltip nativo para itens recolhidos */
+.barra-lateral--recolhida .barra-lateral__link::after {
+  content: attr(data-titulo);
+  position: absolute;
+  left: 80px;
+  background-color: var(--color-gray-900);
+  color: var(--color-text-inverse);
+  padding: var(--space-1) var(--space-3);
+  font-size: 11px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast);
+  box-shadow: var(--shadow-md);
+  z-index: 30;
+}
+
+.barra-lateral--recolhida .barra-lateral__link:hover::after {
+  opacity: 1;
+}

@@ -4,8 +4,8 @@
  * O sistema não deve subir se uma variável obrigatória estiver faltando.
  */
 
-function getEnvVar(key: string): string {
-  const value = process.env[key]
+function getEnvVar(key: string, valorEstatico?: string): string {
+  const value = valorEstatico || process.env[key]
   if (!value) {
     throw new Error(
       `[Oofa] Variável de ambiente obrigatória não definida: ${key}\n` +
@@ -16,8 +16,8 @@ function getEnvVar(key: string): string {
 }
 
 export const env = {
-  NEXT_PUBLIC_SUPABASE_URL:      getEnvVar('NEXT_PUBLIC_SUPABASE_URL'),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY'),
+  NEXT_PUBLIC_SUPABASE_URL:      getEnvVar('NEXT_PUBLIC_SUPABASE_URL', process.env.NEXT_PUBLIC_SUPABASE_URL),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
   SUPABASE_SERVICE_ROLE_KEY:     process.env.SUPABASE_SERVICE_ROLE_KEY ?? '',
   CRON_SECRET:                   process.env.CRON_SECRET ?? '',
   BLING_CLIENT_ID:               process.env.BLING_CLIENT_ID ?? '',

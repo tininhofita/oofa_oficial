@@ -5,19 +5,19 @@
 -- ============================================================
 
 -- Enum
--- CREATE TYPE user_role AS ENUM ('admin', 'gerente', 'operador');
+CREATE TYPE user_role AS ENUM ('admin', 'gerente', 'operador');
 
 -- Estrutura
--- CREATE TABLE profiles (
---   id          UUID        PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
---   full_name   TEXT        NOT NULL,
---   email       TEXT        NOT NULL UNIQUE,
---   role        user_role   NOT NULL DEFAULT 'operador',
---   is_active   BOOLEAN     NOT NULL DEFAULT true,
---   avatar_url  TEXT,
---   created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
---   updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
--- );
+CREATE TABLE profiles (
+  id          UUID        PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  full_name   TEXT        NOT NULL,
+  email       TEXT        NOT NULL UNIQUE,
+  role        user_role   NOT NULL DEFAULT 'operador',
+  is_active   BOOLEAN     NOT NULL DEFAULT true,
+  avatar_url  TEXT,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 
 -- Campos:
 --   id          → UUID do auth.users (mesmo ID)
