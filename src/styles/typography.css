@@ -1,0 +1,99 @@
+/* ============================================================
+   TIPOGRAFIA — classes utilitárias de texto
+   ============================================================ */
+
+/* Títulos */
+.title-xl {
+  font-size: var(--fs-title-xl);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+}
+
+.title-lg {
+  font-size: var(--fs-title-lg);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+}
+
+.title-md {
+  font-size: var(--fs-title-md);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+}
+
+.title-sm {
+  font-size: var(--fs-title-sm);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-tight);
+  color: var(--color-text-primary);
+}
+
+/* Textos corridos */
+.text-lg {
+  font-size: var(--fs-text-lg);
+  line-height: var(--lh-normal);
+}
+
+.text-md {
+  font-size: var(--fs-text-md);
+  line-height: var(--lh-normal);
+}
+
+.text-sm {
+  font-size: var(--fs-text-sm);
+  line-height: var(--lh-normal);
+}
+
+.text-xs {
+  font-size: var(--fs-text-xs);
+  line-height: var(--lh-normal);
+}
+
+/* Auxiliares */
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-danger {
+  color: var(--color-danger);
+}
+
+.text-success {
+  color: var(--color-success);
+}
+
+.text-bold {
+  font-weight: var(--fw-bold);
+}
+
+.text-semibold {
+  font-weight: var(--fw-semibold);
+}
+
+.text-medium {
+  font-weight: var(--fw-medium);
+}
+
+.caption {
+  font-size: var(--fs-caption);
+  color: var(--color-text-secondary);
+  line-height: var(--lh-normal);
+}
+
+.label {
+  font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}

@@ -1,0 +1,141 @@
+/* ============================================================
+   DESIGN TOKENS — fonte de verdade do design system Oofa
+   Importe este arquivo em globals.css e nunca use valores
+   crus no CSS — sempre use as variáveis abaixo.
+   ============================================================ */
+
+:root {
+  /* ----------------------------------------------------------
+     CORES — Paleta principal
+  ---------------------------------------------------------- */
+
+  /* Marca */
+  --color-brand:          #1e1b4b; /* indigo-950 — painel lateral */
+  --color-brand-mid:      #312e81; /* indigo-900 */
+
+  /* Primária (ações, links, foco) */
+  --color-primary:        #4f46e5; /* indigo-600 */
+  --color-primary-hover:  #4338ca; /* indigo-700 */
+  --color-primary-active: #3730a3; /* indigo-800 */
+  --color-primary-light:  #eef2ff; /* indigo-50 */
+
+  /* Neutros */
+  --color-gray-50:  #f8fafc;
+  --color-gray-100: #f1f5f9;
+  --color-gray-200: #e2e8f0;
+  --color-gray-300: #cbd5e1;
+  --color-gray-400: #94a3b8;
+  --color-gray-500: #64748b;
+  --color-gray-600: #475569;
+  --color-gray-700: #334155;
+  --color-gray-800: #1e293b;
+  --color-gray-900: #0f172a;
+
+  /* Semânticas */
+  --color-success:       #16a34a;
+  --color-success-light: #f0fdf4;
+  --color-success-border:#bbf7d0;
+
+  --color-warning:       #d97706;
+  --color-warning-light: #fffbeb;
+  --color-warning-border:#fde68a;
+
+  --color-danger:        #dc2626;
+  --color-danger-hover:  #b91c1c;
+  --color-danger-light:  #fef2f2;
+  --color-danger-border: #fecaca;
+
+  --color-info:          #0284c7;
+  --color-info-light:    #f0f9ff;
+  --color-info-border:   #bae6fd;
+
+  /* Superfícies */
+  --color-bg:      #f8fafc;
+  --color-surface: #ffffff;
+
+  /* Bordas */
+  --color-border:       #e2e8f0;
+  --color-border-focus: #4f46e5;
+
+  /* Texto */
+  --color-text-primary:   #0f172a;
+  --color-text-secondary: #64748b;
+  --color-text-disabled:  #94a3b8;
+  --color-text-inverse:   #ffffff;
+
+  /* ----------------------------------------------------------
+     TIPOGRAFIA — escala da identidade Oofa
+  ---------------------------------------------------------- */
+
+  /* Títulos */
+  --fs-title-xl: 3.32rem;
+  --fs-title-lg: 2.76rem;
+  --fs-title-md: 2.3rem;
+  --fs-title-sm: 1.92rem;
+
+  /* Textos corridos */
+  --fs-text-lg: 1.92rem;
+  --fs-text-md: 1.6rem;
+  --fs-text-sm: 1.33rem;
+  --fs-text-xs: 1.11rem;
+
+  /* Elementos de UI */
+  --fs-label:   0.92rem;
+  --fs-button:  1.33rem;
+  --fs-caption: 1.2rem;
+  --fs-input:   1.6rem;
+
+  /* Font weights */
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fw-semibold: 600;
+  --fw-bold:    700;
+
+  /* Line heights */
+  --lh-tight:  1.25;
+  --lh-normal: 1.5;
+  --lh-loose:  1.75;
+
+  /* ----------------------------------------------------------
+     ESPAÇAMENTO — escala de 4px
+  ---------------------------------------------------------- */
+  --space-1:  0.25rem;  /*  4px */
+  --space-2:  0.5rem;   /*  8px */
+  --space-3:  0.75rem;  /* 12px */
+  --space-4:  1rem;     /* 16px */
+  --space-5:  1.25rem;  /* 20px */
+  --space-6:  1.5rem;   /* 24px */
+  --space-8:  2rem;     /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+
+  /* ----------------------------------------------------------
+     BORDAS E SOMBRAS
+  ---------------------------------------------------------- */
+  --radius-sm: 0.25rem;  /*  4px */
+  --radius-md: 0.5rem;   /*  8px */
+  --radius-lg: 0.75rem;  /* 12px */
+  --radius-xl: 1rem;     /* 16px */
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  /* ----------------------------------------------------------
+     TRANSIÇÕES
+  ---------------------------------------------------------- */
+  --transition-fast:   150ms ease;
+  --transition-normal: 200ms ease;
+  --transition-slow:   300ms ease;
+
+  /* ----------------------------------------------------------
+     LAYOUT
+  ---------------------------------------------------------- */
+  --sidebar-width:       240px;
+  --header-height:       64px;
+  --content-max-width:   1280px;
+}

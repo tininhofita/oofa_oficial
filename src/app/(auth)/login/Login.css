@@ -1,0 +1,171 @@
+/* ============================================================
+   LOGIN — layout split panel
+   Desktop: painel de marca (esq) + formulário (dir)
+   Mobile:  apenas o formulário
+   ============================================================ */
+
+.login {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+}
+
+/* ----------------------------------------------------------
+   Painel de marca (lado esquerdo)
+---------------------------------------------------------- */
+.login__brand {
+  display: none;
+  position: relative;
+  flex: 0 0 42%;
+  background-color: var(--color-brand);
+  overflow: hidden;
+  padding: var(--space-16);
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.login__brand-content {
+  position: relative;
+  z-index: 1;
+}
+
+.login__brand-logo {
+  display: block;
+  font-size: var(--fs-title-xl);
+  font-weight: var(--fw-bold);
+  color: var(--color-text-inverse);
+  letter-spacing: -0.04em;
+  margin-bottom: var(--space-6);
+}
+
+.login__brand-tagline {
+  font-size: var(--fs-text-md);
+  color: rgba(255, 255, 255, 0.6);
+  line-height: var(--lh-loose);
+  max-width: 380px;
+}
+
+/* Elementos decorativos */
+.login__brand-decoration {
+  position: absolute;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.login__brand-decoration--1 {
+  width: 480px;
+  height: 480px;
+  bottom: -120px;
+  right: -120px;
+}
+
+.login__brand-decoration--2 {
+  width: 240px;
+  height: 240px;
+  top: 10%;
+  right: 8%;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.login__brand-decoration--3 {
+  width: 120px;
+  height: 120px;
+  top: 30%;
+  left: 10%;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* ----------------------------------------------------------
+   Painel do formulário (lado direito)
+---------------------------------------------------------- */
+.login__form-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) var(--space-6);
+  min-height: 100vh;
+}
+
+.login__mobile-logo {
+  display: block;
+  font-size: var(--fs-title-md);
+  font-weight: var(--fw-bold);
+  color: var(--color-primary);
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-10);
+  align-self: flex-start;
+}
+
+.login__form-container {
+  width: 100%;
+  max-width: 420px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Header do formulário */
+.login__form-header {
+  margin-bottom: var(--space-8);
+}
+
+.login__form-title {
+  font-size: var(--fs-title-md);
+  font-weight: var(--fw-bold);
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+  line-height: var(--lh-tight);
+  margin-bottom: var(--space-2);
+}
+
+.login__form-subtitle {
+  font-size: var(--fs-text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--lh-normal);
+}
+
+/* Formulário */
+.login__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.login__submit {
+  margin-top: var(--space-2);
+}
+
+/* Rodapé */
+.login__footer {
+  margin-top: var(--space-12);
+  font-size: var(--fs-text-xs);
+  color: var(--color-text-disabled);
+  text-align: center;
+  align-self: center;
+}
+
+/* ----------------------------------------------------------
+   Desktop: mostra o painel de marca
+---------------------------------------------------------- */
+@media (min-width: 768px) {
+  .login__brand {
+    display: flex;
+  }
+
+  .login__mobile-logo {
+    display: none;
+  }
+
+  .login__form-side {
+    padding: var(--space-16) var(--space-12);
+  }
+}
+
+@media (min-width: 1024px) {
+  .login__brand {
+    flex: 0 0 45%;
+  }
+}
