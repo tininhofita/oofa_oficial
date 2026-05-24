@@ -35,11 +35,13 @@ export default async function LayoutAplicativo({ children }: PropriedadesLayout)
   }
 
   // Busca dados de perfil estendidos na tabela 'profiles' do banco de dados
-  const { data: perfil } = (await clienteSupabase
+  const resultadoPerfil = await clienteSupabase
     .from('profiles')
     .select('full_name, email, role, avatar_url')
     .eq('id', user.id)
-    .single()) as unknown as { data: PerfilUsuario | null }
+    .single()
+
+  const perfil = resultadoPerfil.data as PerfilUsuario | null
 
   // Define dados com fallbacks seguros para evitar quebras de interface
   const nomeUsuario = perfil?.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Usuário'
