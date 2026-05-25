@@ -77,8 +77,10 @@ export interface BlingNfeItem {
   informacoesAdicionais?: string
   gtin?: string
   cfop?: string
-  valorAproxTotalTributos?: number
-  icms?: { st?: number; origem?: number; modalidade?: number; aliquota?: number; valor?: number }
+  impostos?: {
+    valorAproximadoTotalTributos?: number
+    icms?: { st?: number; origem?: number; modalidade?: number; aliquota?: number; valor?: number }
+  }
 }
 
 export interface BlingNfeParcela {
@@ -113,17 +115,19 @@ export interface BlingNotaFiscalDados {
   naturezaOperacao?: { id: number }
   canalVenda?: { id: number }
   vendedor?: { id: number }
-  fretePorConta?: number
-  transportador?: { nome?: string; documento?: string }
-  etiqueta?: {
-    nome?: string
-    endereco?: string
-    numero?: string
-    complemento?: string
-    municipio?: string
-    uf?: string
-    cep?: string
-    bairro?: string
+  transporte?: {
+    fretePorConta?: number
+    transportador?: { nome?: string; numeroDocumento?: string }
+    etiqueta?: {
+      nome?: string
+      endereco?: string
+      numero?: string
+      complemento?: string
+      municipio?: string
+      uf?: string
+      cep?: string
+      bairro?: string
+    }
   }
   itens?: BlingNfeItem[]
   parcelas?: BlingNfeParcela[]
@@ -150,16 +154,18 @@ export interface BlingNotaFiscalConsumidorDados {
   naturezaOperacao?: { id: number }
   canalVenda?: { id: number }
   vendedor?: { id: number }
-  fretePorConta?: number
-  transportador?: { nome?: string; documento?: string }
-  etiqueta?: {
-    nome?: string
-    endereco?: string
-    numero?: string
-    complemento?: string
-    municipio?: string
-    uf?: string
-    cep?: string
-    bairro?: string
+  transporte?: {
+    fretePorConta?: number
+    transportador?: { nome?: string; numeroDocumento?: string }
+    etiqueta?: {
+      nome?: string
+      endereco?: string
+      numero?: string
+      complemento?: string
+      municipio?: string
+      uf?: string
+      cep?: string
+      bairro?: string
+    }
   }
 }

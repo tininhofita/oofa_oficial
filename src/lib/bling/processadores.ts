@@ -186,6 +186,9 @@ async function enriquecerNfe(
   const d = resposta?.data as BlingNotaFiscalDados | null
   if (!d) return
 
+  const transporte = d.transporte ?? {}
+  const etiqueta = transporte.etiqueta ?? {}
+
   await db.from('nfe').update({
     tipo: d.tipo ?? null,
     situacao: d.situacao ?? null,
@@ -205,19 +208,19 @@ async function enriquecerNfe(
     numero_pedido_loja: d.numeroPedidoLoja ?? null,
     contato_id: d.contato?.id ?? null,
     natureza_operacao_id: d.naturezaOperacao?.id ?? null,
-    canal_venda_id: d.canalVenda?.id ?? null,
+    canal_venda_id: d.loja?.id ?? null,
     vendedor_id: d.vendedor?.id ?? null,
-    frete_por_conta: d.fretePorConta ?? null,
-    transportador_nome: d.transportador?.nome ?? null,
-    transportador_documento: d.transportador?.documento ?? null,
-    etiqueta_nome: d.etiqueta?.nome ?? null,
-    etiqueta_endereco: d.etiqueta?.endereco ?? null,
-    etiqueta_numero: d.etiqueta?.numero ?? null,
-    etiqueta_complemento: d.etiqueta?.complemento ?? null,
-    etiqueta_municipio: d.etiqueta?.municipio ?? null,
-    etiqueta_uf: d.etiqueta?.uf ?? null,
-    etiqueta_cep: d.etiqueta?.cep ?? null,
-    etiqueta_bairro: d.etiqueta?.bairro ?? null,
+    frete_por_conta: transporte.fretePorConta ?? null,
+    transportador_nome: transporte.transportador?.nome ?? null,
+    transportador_documento: transporte.transportador?.numeroDocumento ?? null,
+    etiqueta_nome: etiqueta.nome || d.contato?.nome || null,
+    etiqueta_endereco: etiqueta.endereco ?? null,
+    etiqueta_numero: etiqueta.numero ?? null,
+    etiqueta_complemento: etiqueta.complemento ?? null,
+    etiqueta_municipio: etiqueta.municipio ?? null,
+    etiqueta_uf: etiqueta.uf ?? null,
+    etiqueta_cep: etiqueta.cep ?? null,
+    etiqueta_bairro: etiqueta.bairro ?? null,
     atualizado_em: new Date().toISOString(),
   }).eq('id', id)
 
@@ -243,12 +246,12 @@ async function enriquecerNfe(
         informacoes_adicionais: item.informacoesAdicionais ?? null,
         gtin: item.gtin ?? null,
         cfop: item.cfop ?? null,
-        valor_aprox_total_tributos: item.valorAproxTotalTributos ?? null,
-        icms_st: item.icms?.st ?? null,
-        icms_origem: item.icms?.origem ?? null,
-        icms_modalidade: item.icms?.modalidade ?? null,
-        icms_aliquota: item.icms?.aliquota ?? null,
-        icms_valor: item.icms?.valor ?? null,
+        valor_aprox_total_tributos: item.impostos?.valorAproximadoTotalTributos ?? null,
+        icms_st: item.impostos?.icms?.st ?? null,
+        icms_origem: item.impostos?.icms?.origem ?? null,
+        icms_modalidade: item.impostos?.icms?.modalidade ?? null,
+        icms_aliquota: item.impostos?.icms?.aliquota ?? null,
+        icms_valor: item.impostos?.icms?.valor ?? null,
       }))
     )
   }
