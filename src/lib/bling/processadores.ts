@@ -6,6 +6,8 @@ import type {
   BlingPedidoVendaDados,
   BlingNotaFiscalDados,
   BlingNotaFiscalConsumidorDados,
+  BlingNfeItem,
+  BlingNfeParcela,
 } from './types'
 import { blingGetWithRetry } from './client'
 
@@ -218,4 +220,50 @@ async function enriquecerNfe(
     etiqueta_bairro: d.etiqueta?.bairro ?? null,
     atualizado_em: new Date().toISOString(),
   }).eq('id', id)
+
+  if (Array.isArray(d.itens) && d.itens.length > 0) {
+    await db.from('nfe_itens').delete().eq('nfe_id', id)
+    await db.from('nfe_itens').insert(
+      (d.itens as BlingNfeItem[]).map((item) => ({
+        nfe_id: id,
+        codigo: item.codigo ?? null,
+        descricao: item.descricao ?? null,
+        unidade: item.unidade ?? null,
+        quantidade: item.quantidade ?? null,
+        valor: item.valor ?? null,
+        valor_total: item.valorTotal ?? null,
+        tipo: item.tipo ?? null,
+        peso_bruto: item.pesoBruto ?? null,
+        peso_liquido: item.pesoLiquido ?? null,
+        numero_pedido_compra: item.numeroPedidoCompra ?? null,
+        classificacao_fiscal: item.classificacaoFiscal ?? null,
+        cest: item.cest ?? null,
+        codigo_servico: item.codigoServico ?? null,
+        origem: item.origem ?? null,
+        informacoes_adicionais: item.informacoesAdicionais ?? null,
+        gtin: item.gtin ?? null,
+        cfop: item.cfop ?? null,
+        valor_aprox_total_tributos: item.valorAproxTotalTributos ?? null,
+        icms_st: item.icms?.st ?? null,
+        icms_origem: item.icms?.origem ?? null,
+        icms_modalidade: item.icms?.modalidade ?? null,
+        icms_aliquota: item.icms?.aliquota ?? null,
+        icms_valor: item.icms?.valor ?? null,
+      }))
+    )
+  }
+
+  if (Array.isArray(d.parcelas) && d.parcelas.length > 0) {
+    await db.from('nfe_parcelas').delete().eq('nfe_id', id)
+    await db.from('nfe_parcelas').insert(
+      (d.parcelas as BlingNfeParcela[]).map((parcela) => ({
+        nfe_id: id,
+        data: parcela.data ?? null,
+        valor: parcela.valor ?? null,
+        observacoes: parcela.observacoes ?? null,
+        caut: parcela.caut ?? null,
+        forma_pagamento_id: parcela.formaPagamento?.id ?? null,
+      }))
+    )
+  }
 }

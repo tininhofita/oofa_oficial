@@ -59,6 +59,36 @@ export interface BlingPedidoVendaDados {
   transporte?: unknown
 }
 
+export interface BlingNfeItem {
+  codigo?: string
+  descricao?: string
+  unidade?: string
+  quantidade?: number
+  valor?: number
+  valorTotal?: number
+  tipo?: string
+  pesoBruto?: number
+  pesoLiquido?: number
+  numeroPedidoCompra?: string
+  classificacaoFiscal?: string
+  cest?: string
+  codigoServico?: string
+  origem?: number
+  informacoesAdicionais?: string
+  gtin?: string
+  cfop?: string
+  valorAproxTotalTributos?: number
+  icms?: { st?: number; origem?: number; modalidade?: number; aliquota?: number; valor?: number }
+}
+
+export interface BlingNfeParcela {
+  data?: string
+  valor?: number
+  observacoes?: string
+  caut?: string
+  formaPagamento?: { id?: number }
+}
+
 export interface BlingNotaFiscalDados {
   id: number
   tipo?: number
@@ -95,6 +125,8 @@ export interface BlingNotaFiscalDados {
     cep?: string
     bairro?: string
   }
+  itens?: BlingNfeItem[]
+  parcelas?: BlingNfeParcela[]
 }
 
 export interface BlingNotaFiscalConsumidorDados {
