@@ -1,0 +1,24 @@
+-- Tabela: bling_eventos
+-- Log de todos os eventos brutos recebidos via webhook do Bling.
+-- Payload completo preservado para auditoria e reprocessamento.
+--
+-- Colunas principais:
+--   recurso   → "stock" | "order" | "invoice" | "consumer_invoice"
+--   acao      → "created" | "updated" | "deleted" | "issued"
+--   event_id  → eventId do Bling (identificador único do evento)
+--   bling_id  → ID da entidade no Bling (extraído de data.id ou data.produto.id)
+--   status    → recebido | processado | erro
+--
+-- RLS: SELECT para admin e gerente; INSERT pelo service_role (bypass automático)
+--
+-- CREATE TABLE bling_eventos (
+--   id            UUID                DEFAULT gen_random_uuid() PRIMARY KEY,
+--   recurso       VARCHAR(30)         NOT NULL,
+--   acao          VARCHAR(20)         NOT NULL,
+--   event_id      VARCHAR(100),
+--   bling_id      BIGINT,
+--   payload       JSONB               NOT NULL,
+--   status        status_evento_bling NOT NULL DEFAULT 'recebido',
+--   erro_mensagem TEXT,
+--   created_at    TIMESTAMPTZ         NOT NULL DEFAULT NOW()
+-- );

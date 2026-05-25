@@ -1,0 +1,26 @@
+-- Tabela: bling_notas_fiscais_consumidor
+-- NFC-e recebidas via webhook do Bling (consumer_invoice.*).
+-- Estrutura similar à NFe, com adição de valor_nota.
+--
+-- CREATE TABLE bling_notas_fiscais_consumidor (
+--   id                   UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
+--   bling_evento_id      UUID        REFERENCES bling_eventos(id),
+--   bling_id             BIGINT      NOT NULL,
+--   acao                 VARCHAR(20) NOT NULL,
+--   tipo                 CHAR(1),
+--   situacao             VARCHAR(5),
+--   numero               VARCHAR(20),
+--   serie                INTEGER,
+--   valor_nota           NUMERIC(15,2),
+--   data_emissao         DATE,
+--   data_operacao        DATE,
+--   contato_id           BIGINT,
+--   contato_nome         VARCHAR(255),
+--   contato_documento    VARCHAR(30),
+--   loja_id              INTEGER,
+--   chave_acesso         VARCHAR(50),
+--   link_danfe           TEXT,
+--   link_pdf             TEXT,
+--   payload_completo     JSONB       NOT NULL,
+--   created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW()
+-- );

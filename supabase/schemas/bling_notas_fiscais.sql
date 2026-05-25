@@ -1,0 +1,30 @@
+-- Tabela: bling_notas_fiscais
+-- Notas Fiscais Eletrônicas (NFe) recebidas via webhook do Bling (invoice.*).
+--
+-- Colunas:
+--   tipo      → "E" (entrada) | "S" (saída)
+--   situacao  → "A" (autorizada), "C" (cancelada), "D" (denegada), etc.
+--
+-- RLS: SELECT para admin e gerente; INSERT pelo service_role
+--
+-- CREATE TABLE bling_notas_fiscais (
+--   id                   UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
+--   bling_evento_id      UUID        REFERENCES bling_eventos(id),
+--   bling_id             BIGINT      NOT NULL,
+--   acao                 VARCHAR(20) NOT NULL,
+--   tipo                 CHAR(1),
+--   situacao             VARCHAR(5),
+--   numero               VARCHAR(20),
+--   serie                INTEGER,
+--   data_emissao         DATE,
+--   data_operacao        DATE,
+--   contato_id           BIGINT,
+--   contato_nome         VARCHAR(255),
+--   contato_documento    VARCHAR(30),
+--   loja_id              INTEGER,
+--   chave_acesso         VARCHAR(50),
+--   link_danfe           TEXT,
+--   link_pdf             TEXT,
+--   payload_completo     JSONB       NOT NULL,
+--   created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW()
+-- );
