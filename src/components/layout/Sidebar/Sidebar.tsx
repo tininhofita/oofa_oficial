@@ -169,7 +169,17 @@ export function BarraLateral({ nomeUsuario, emailUsuario, avatarUrl }: Proprieda
           <rect x="16" y="16" width="6" height="6" rx="1" />
           <rect x="2" y="2" width="6" height="6" rx="1" />
         </svg>
-      )
+      ),
+      subitens: [
+        {
+          titulo: 'Bling ERP',
+          link: ROUTES.INTEGRACOES_BLING
+        },
+        {
+          titulo: 'Nuvemshop',
+          link: ROUTES.INTEGRACOES_NUVEMSHOP
+        }
+      ]
     },
     {
       titulo: 'Usuários',

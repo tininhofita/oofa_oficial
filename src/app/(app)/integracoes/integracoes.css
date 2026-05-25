@@ -1,0 +1,172 @@
+/* ============================================================
+   ESTILOS DAS PÁGINAS DE INTEGRAÇÕES (OOFA)
+   Nomenclatura BEM em Português BR.
+   ============================================================ */
+
+.pagina-integracao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  padding: var(--space-8);
+  background-color: var(--color-bg);
+}
+
+.pagina-integracao__painel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-12) var(--space-8);
+  box-shadow: var(--shadow-lg);
+  max-width: 540px;
+  width: 100%;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.pagina-integracao__painel:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+}
+
+.pagina-integracao__vetor-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-6);
+  position: relative;
+}
+
+.pagina-integracao__vetor-container::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border: 2px dashed var(--color-primary);
+  border-radius: var(--radius-full);
+  opacity: 0.4;
+  animation: girarBordaDashed 20s linear infinite;
+}
+
+@keyframes girarBordaDashed {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pagina-integracao__vetor {
+  width: 40px;
+  height: 40px;
+  animation: pulsoSuave 3s ease-in-out infinite;
+}
+
+@keyframes pulsoSuave {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.85;
+  }
+}
+
+.pagina-integracao__titulo {
+  font-size: var(--fs-title-sm);
+  font-weight: var(--fw-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-3);
+  letter-spacing: -0.5px;
+}
+
+.pagina-integracao__marca {
+  font-size: var(--fs-text-lg);
+  font-weight: var(--fw-semibold);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-brand) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: var(--space-4);
+}
+
+.pagina-integracao__descricao {
+  font-size: var(--fs-text-md);
+  color: var(--color-text-secondary);
+  line-height: var(--lh-normal);
+  margin-bottom: var(--space-8);
+  max-width: 420px;
+}
+
+.pagina-integracao__distintivo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background-color: var(--color-warning-light);
+  color: var(--color-warning);
+  border: 1px solid var(--color-warning-border);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  font-size: var(--fs-text-xs);
+  font-weight: var(--fw-semibold);
+  margin-bottom: var(--space-6);
+}
+
+.pagina-integracao__distintivo-ponto {
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-warning);
+  border-radius: var(--radius-full);
+  animation: piscarAlerta 1.5s infinite;
+}
+
+@keyframes piscarAlerta {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+}
+
+.pagina-integracao__botao-voltar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-size: var(--fs-text-sm);
+  font-weight: var(--fw-semibold);
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+  border: none;
+  cursor: pointer;
+}
+
+.pagina-integracao__botao-voltar:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+
+.pagina-integracao__botao-voltar:active {
+  background-color: var(--color-primary-active);
+  transform: translateY(0);
+}

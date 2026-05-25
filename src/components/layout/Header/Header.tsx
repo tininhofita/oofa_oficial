@@ -27,6 +27,8 @@ function obterTituloDaPagina(caminho: string): string {
   if (caminho === ROUTES.MOVIMENTACOES) return 'Movimentações'
   if (caminho === ROUTES.RELATORIOS) return 'Relatórios'
   if (caminho === ROUTES.INTEGRACOES) return 'Integrações'
+  if (caminho === ROUTES.INTEGRACOES_BLING) return 'Integração Bling'
+  if (caminho === ROUTES.INTEGRACOES_NUVEMSHOP) return 'Integração Nuvemshop'
   if (caminho === ROUTES.CONFIGURACOES) return 'Configurações'
   if (caminho === ROUTES.PERFIL) return 'Meu Perfil'
   if (caminho === ROUTES.USUARIOS) return 'Usuários'
