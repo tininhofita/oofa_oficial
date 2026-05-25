@@ -112,42 +112,56 @@ export default function PaginaDashboardComercial() {
         const inicioFormatado = `${dataInicio} 00:00:00`
         const fimFormatado = `${dataFim} 23:59:59`
 
-        // 2. Query de Notas Fiscais com itens (Filtro e lógica idênticos a relatórios/importação)
-        let consulta = clienteSupabase
-          .from('nfe')
-          .select(`
-            id,
-            numero,
-            data_emissao,
-            valor_nota,
-            valor_frete,
-            tipo_nota,
-            situacao,
-            natureza_operacao_id,
-            nfe_itens (
-              id,
-              codigo,
-              descricao,
-              quantidade,
-              valor,
-              valor_total
-            )
-          `)
-          .gte('data_emissao', inicioFormatado)
-          .lte('data_emissao', fimFormatado)
+        // 2. Query de Notas Fiscais paginada para superar o limite de 1000 registros do Supabase
+        let todosDadosNotas: NotaFiscal[] = []
+        let de = 0
+        const limiteLote = 1000
 
-        if (situacaoFiltro === 'autorizada') {
-          consulta = consulta.in('situacao', [5, 6, 7])
-        } else if (situacaoFiltro === 'cancelada') {
-          consulta = consulta.eq('situacao', 2)
-        } else if (situacaoFiltro === 'pendente') {
-          consulta = consulta.eq('situacao', 1)
+        while (true) {
+          let consulta = clienteSupabase
+            .from('nfe')
+            .select(`
+              id,
+              numero,
+              data_emissao,
+              valor_nota,
+              valor_frete,
+              tipo_nota,
+              situacao,
+              natureza_operacao_id,
+              nfe_itens (
+                id,
+                codigo,
+                descricao,
+                quantidade,
+                valor,
+                valor_total
+              )
+            `)
+            .gte('data_emissao', inicioFormatado)
+            .lte('data_emissao', fimFormatado)
+            .range(de, de + limiteLote - 1)
+
+          if (situacaoFiltro === 'autorizada') {
+            consulta = consulta.in('situacao', [5, 6, 7])
+          } else if (situacaoFiltro === 'cancelada') {
+            consulta = consulta.eq('situacao', 2)
+          } else if (situacaoFiltro === 'pendente') {
+            consulta = consulta.eq('situacao', 1)
+          }
+
+          const { data: dadosNotas, error: erroNotas } = await consulta
+
+          if (erroNotas) throw erroNotas
+          if (!dadosNotas || dadosNotas.length === 0) break
+
+          todosDadosNotas = [...todosDadosNotas, ...dadosNotas]
+
+          if (dadosNotas.length < limiteLote) break
+          de += limiteLote
         }
 
-        const { data: dadosNotas, error: erroNotas } = await consulta
-
-        if (erroNotas) throw erroNotas
-        definirNotasFiscais(dadosNotas || [])
+        definirNotasFiscais(todosDadosNotas)
       } catch (err: any) {
         console.error('Erro ao carregar dados do dashboard:', err)
         console.error('Detalhes do erro:', {
