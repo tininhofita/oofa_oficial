@@ -1,0 +1,136 @@
+.bling-integracao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.bling-integracao__secao {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.bling-integracao__titulo-secao {
+  font-size: var(--fs-text-md);
+  font-weight: var(--fw-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.bling-integracao__descricao {
+  font-size: var(--fs-text-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: var(--lh-normal);
+}
+
+.bling-integracao__status-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--fs-text-sm);
+  color: var(--color-text-primary);
+}
+
+.bling-url-copiar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+}
+
+.bling-url-copiar__valor {
+  flex: 1;
+  font-size: var(--fs-text-sm);
+  color: var(--color-text-primary);
+  font-family: monospace;
+  word-break: break-all;
+}
+
+.bling-url-copiar__botao {
+  flex-shrink: 0;
+}
+
+.bling-integracao__credenciais-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.bling-integracao__credencial-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.bling-integracao__credencial-nome {
+  font-size: var(--fs-text-sm);
+  color: var(--color-text-primary);
+  font-family: monospace;
+}
+
+.bling-integracao__eventos-mapeados {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.bling-integracao__eventos-mapeados li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--fs-text-sm);
+  color: var(--color-text-secondary);
+}
+
+.bling-integracao__tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-text-sm);
+}
+
+.bling-integracao__tabela th {
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 2px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-label);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.bling-integracao__tabela td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.bling-integracao__tabela tr:last-child td {
+  border-bottom: none;
+}
+
+.bling-integracao__sem-eventos {
+  font-size: var(--fs-text-sm);
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: var(--space-8) 0;
+  margin: 0;
+}
