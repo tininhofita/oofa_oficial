@@ -42,7 +42,7 @@ export default function PaginaDashboardComercial() {
   const [tipoPeriodo, definirTipoPeriodo] = useState<string>('mes-atual')
   const [dataInicio, definirDataInicio] = useState<string>('')
   const [dataFim, definirDataFim] = useState<string>('')
-  const [situacaoFiltro, definirSituacaoFiltro] = useState<string>('2') // Padrão: Emitida/Autorizada
+  const [situacaoFiltro, definirSituacaoFiltro] = useState<string>('autorizada') // Padrão: Autorizadas / Emitidas
 
   // Estados de dados e carregamento
   const [notasFiscais, definirNotasFiscais] = useState<NotaFiscal[]>([])
@@ -108,11 +108,11 @@ export default function PaginaDashboardComercial() {
         if (erroNaturezas) throw erroNaturezas
         definirNaturezasCadastradas(dadosNaturezas || [])
 
-        // Converter datas para ISO com limites de horas para cobrir o dia completo
-        const inicioISO = `${dataInicio}T00:00:00.000Z`
-        const fimISO = `${dataFim}T23:59:59.999Z`
+        // Converter datas para formato de texto compatível com TIMESTAMP
+        const inicioFormatado = `${dataInicio} 00:00:00`
+        const fimFormatado = `${dataFim} 23:59:59`
 
-        // 2. Query de Notas Fiscais com itens
+        // 2. Query de Notas Fiscais com itens (Filtro e lógica idênticos a relatórios/importação)
         let consulta = clienteSupabase
           .from('nfe')
           .select(`
@@ -133,11 +133,15 @@ export default function PaginaDashboardComercial() {
               valor_total
             )
           `)
-          .gte('data_emissao', inicioISO)
-          .lte('data_emissao', fimISO)
+          .gte('data_emissao', inicioFormatado)
+          .lte('data_emissao', fimFormatado)
 
-        if (situacaoFiltro !== 'todas') {
-          consulta = consulta.eq('situacao', Number(situacaoFiltro))
+        if (situacaoFiltro === 'autorizada') {
+          consulta = consulta.in('situacao', [5, 6, 7])
+        } else if (situacaoFiltro === 'cancelada') {
+          consulta = consulta.eq('situacao', 2)
+        } else if (situacaoFiltro === 'pendente') {
+          consulta = consulta.eq('situacao', 1)
         }
 
         const { data: dadosNotas, error: erroNotas } = await consulta
@@ -343,9 +347,9 @@ export default function PaginaDashboardComercial() {
             onChange={(e) => definirSituacaoFiltro(e.target.value)}
           >
             <option value="todas">Todas as Situações</option>
-            <option value="1">Pendentes (1)</option>
-            <option value="2">Emitidas/Autorizadas (2)</option>
-            <option value="3">Canceladas (3)</option>
+            <option value="autorizada">Autorizadas / Emitidas</option>
+            <option value="pendente">Pendentes</option>
+            <option value="cancelada">Canceladas</option>
           </select>
         </div>
       </section>
