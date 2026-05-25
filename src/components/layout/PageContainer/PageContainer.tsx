@@ -8,12 +8,12 @@ interface PageContainerProps {
 export function PageContainer({ titulo, children }: PageContainerProps) {
   return (
     <div className="page-container">
-      <header className="page-container__cabecalho">
-        <h1 className="page-container__titulo">{titulo}</h1>
-      </header>
-      <main className="page-container__conteudo">
+      <div className="page-container__cabecalho">
+        <h2 className="page-container__titulo">{titulo}</h2>
+      </div>
+      <div className="page-container__conteudo">
         {children}
-      </main>
+      </div>
     </div>
   )
 }
