@@ -1,0 +1,27 @@
+.page-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-8);
+  max-width: var(--content-max-width);
+  width: 100%;
+}
+
+.page-container__cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.page-container__titulo {
+  font-size: var(--fs-title-sm);
+  font-weight: var(--fw-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.page-container__conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
