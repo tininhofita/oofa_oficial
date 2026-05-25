@@ -21,7 +21,7 @@ export default async function IntegracaoBlingPage() {
 
   const { data: eventos } = (await supabase
     .from('bling_eventos')
-    .select('*')
+    .select('id, recurso, acao, bling_id, status, created_at')
     .order('created_at', { ascending: false })
     .limit(20)) as unknown as { data: BlingEvento[] | null }
 
