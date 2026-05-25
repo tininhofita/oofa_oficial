@@ -25,7 +25,9 @@ export default async function IntegracaoBlingPage() {
     .order('created_at', { ascending: false })
     .limit(20)) as unknown as { data: BlingEvento[] | null }
 
-  const urlWebhook = `${env.NEXT_PUBLIC_APP_URL}/api/bling/webhook`
+  const urlWebhook = env.BLING_WEBHOOK_SECRET
+    ? `${env.NEXT_PUBLIC_APP_URL}/api/bling/webhook?token=${env.BLING_WEBHOOK_SECRET}`
+    : `${env.NEXT_PUBLIC_APP_URL}/api/bling/webhook`
 
   const credenciais = {
     webhookSecret: Boolean(env.BLING_WEBHOOK_SECRET),

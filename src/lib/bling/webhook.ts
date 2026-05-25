@@ -3,15 +3,12 @@ import { extrairRecurso } from './types'
 import type { BlingWebhookEnvelope, RecursoBling } from './types'
 
 export function verificarTokenWebhook(request: Request): boolean {
-  const authHeader = request.headers.get('Authorization')
-  if (!authHeader) return false
-
-  if (!authHeader.startsWith('Bearer ')) return false
-  const token = authHeader.slice(7).trim()
-  if (!token) return false
-
   const secret = env.BLING_WEBHOOK_SECRET
   if (!secret) return false
+
+  const url = new URL(request.url)
+  const token = url.searchParams.get('token')
+  if (!token) return false
 
   return token === secret
 }
