@@ -23,6 +23,7 @@ export const ROUTES = {
   MOVIMENTACOES: '/estoque/movimentacoes',
   CLIENTES:      '/clientes',
   RELATORIOS:    '/relatorios',
+  RELATORIOS_IMPORTACAO: '/relatorios/importacao',
   INTEGRACOES:           '/integracoes',
   INTEGRACOES_BLING:     '/integracoes/bling',
   INTEGRACOES_NUVEMSHOP: '/integracoes/nuvemshop',

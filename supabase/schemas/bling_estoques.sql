@@ -1,20 +1,10 @@
--- Tabela: bling_estoques
--- Saldos de estoque recebidos via webhook do Bling (stock.*).
--- Cada linha é um snapshot do saldo no momento do evento.
---
--- Colunas:
---   bling_evento_id → FK para bling_eventos (rastreabilidade)
---   produto_id      → ID do produto no Bling (data.produto.id)
---   saldo_fisico_total   → data.saldoFisicoTotal
---   saldo_virtual_total  → data.saldoVirtualTotal
---
--- RLS: SELECT para admin e gerente; INSERT pelo service_role
---
--- CREATE TABLE bling_estoques (
---   id                   UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
---   bling_evento_id      UUID        REFERENCES bling_eventos(id),
---   produto_id           BIGINT      NOT NULL,
---   saldo_fisico_total   NUMERIC(15,4),
---   saldo_virtual_total  NUMERIC(15,4),
---   created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW()
--- );
+-- Tabela para registrar saldos de estoque (snapshots) recebidos via webhook do Bling.
+
+CREATE TABLE IF NOT EXISTS bling_estoques (
+    id                   UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
+    bling_evento_id      UUID        REFERENCES bling_eventos(id),
+    produto_id           BIGINT      NOT NULL,                       -- ID do produto no Bling
+    saldo_fisico_total   NUMERIC(15,4),                              -- Saldo físico atual
+    saldo_virtual_total  NUMERIC(15,4),                              -- Saldo virtual atual (considerando pedidos)
+    created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

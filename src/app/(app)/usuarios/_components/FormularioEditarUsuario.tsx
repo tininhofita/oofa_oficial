@@ -5,9 +5,13 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ROUTES } from "@/constants/routes";
 import { PERMISSIONS, ROLE_LABELS } from "@/constants/permissions";
-import type { UserRole } from "@/types";
-import { criarUsuario } from "../acoes";
+import type { Profile, UserRole } from "@/types";
+import { atualizarUsuario } from "../acoes";
 import "../usuarios.css";
+
+interface PropriedadesFormularioEditar {
+  usuario: Profile;
+}
 
 /**
  * Interface que traduz as chaves de permissões para títulos legíveis na prévia.
@@ -26,20 +30,20 @@ const TITULOS_PERMISSOES: Record<string, string> = {
 };
 
 /**
- * Página de Criação de Novo Usuário (/usuarios/novo).
- * Oferece formulário premium e painel interativo de visualização de permissões.
- * Nomenclatura baseada estritamente em Português BR.
+ * Componente cliente com formulário premium de edição de usuário.
+ * Permite alterar Nome, E-mail, Cargo, Status de ativação e redefinir senha.
  */
-export default function PaginaNovoUsuario() {
+export function FormularioEditarUsuario({ usuario }: PropriedadesFormularioEditar) {
   const navegador = useRouter();
   const [carregando, definirCarregando] = useState(false);
   const [erro, definirErro] = useState<string | null>(null);
 
-  // Estados dos campos do formulário
-  const [nome, definirNome] = useState("");
-  const [email, definirEmail] = useState("");
-  const [senha, definirSenha] = useState("");
-  const [funcao, definirFuncao] = useState<UserRole>("operador");
+  // Estados dos campos preenchidos com os dados originais do usuário
+  const [nome, definirNome] = useState(usuario.full_name);
+  const [email, definirEmail] = useState(usuario.email);
+  const [senha, definirSenha] = useState(""); // Começa vazia (opcional)
+  const [funcao, definirFuncao] = useState<UserRole>(usuario.role as UserRole);
+  const [ativo, definirAtivo] = useState(usuario.is_active);
 
   // Obtém o mapa de permissões da role selecionada
   const permissoesAtivas = PERMISSIONS[funcao];
@@ -52,21 +56,22 @@ export default function PaginaNovoUsuario() {
     const dadosFormulario = new FormData();
     dadosFormulario.append("nomeCompleto", nome);
     dadosFormulario.append("email", email);
-    dadosFormulario.append("senha", senha);
+    dadosFormulario.append("senha", senha); // Caso preenchida, altera a senha no Auth
     dadosFormulario.append("role", funcao);
+    dadosFormulario.append("ativo", String(ativo));
 
     try {
-      const resultado = await criarUsuario({ sucesso: false, erro: null }, dadosFormulario);
+      const resultado = await atualizarUsuario(usuario.id, { sucesso: false, erro: null }, dadosFormulario);
 
       if (resultado.sucesso) {
         navegador.push(ROUTES.USUARIOS);
         navegador.refresh();
       } else {
-        definirErro(resultado.erro || "Não foi possível cadastrar o usuário.");
+        definirErro(resultado.erro || "Não foi possível atualizar as informações.");
       }
     } catch (err) {
       console.error(err);
-      definirErro("Ocorreu um erro inesperado no envio dos dados.");
+      definirErro("Ocorreu um erro inesperado no processamento dos dados.");
     } finally {
       definirCarregando(false);
     }
@@ -77,9 +82,9 @@ export default function PaginaNovoUsuario() {
       {/* Topo / Voltar */}
       <div className="pagina-usuarios__topo">
         <div className="pagina-usuarios__titulo-container">
-          <h2 className="pagina-usuarios__titulo">Novo Colaborador</h2>
+          <h2 className="pagina-usuarios__titulo">Editar Cadastro: {usuario.full_name}</h2>
           <p className="pagina-usuarios__subtitulo">
-            Cadastre um novo usuário preenchendo as informações e definindo a sua função.
+            Altere as informações cadastrais, defina o status ativo ou redefina as credenciais deste colaborador.
           </p>
         </div>
 
@@ -122,7 +127,6 @@ export default function PaginaNovoUsuario() {
               <input
                 type="text"
                 id="nomeCompleto"
-                placeholder="Ex: João Silva da Rocha"
                 className="form-input"
                 required
                 value={nome}
@@ -142,7 +146,6 @@ export default function PaginaNovoUsuario() {
               <input
                 type="email"
                 id="email"
-                placeholder="Ex: joao.silva@oofa.com"
                 className="form-input"
                 required
                 value={email}
@@ -153,19 +156,17 @@ export default function PaginaNovoUsuario() {
             <div className="formulario-usuario__grid formulario-usuario__grid--duplo" style={{ gap: "var(--space-4)" }}>
               <div className="form-field">
                 <label htmlFor="senha" className="form-label">
-                  Senha de Acesso
+                  Redefinir Senha de Acesso (Opcional)
                 </label>
                 <input
                   type="password"
                   id="senha"
-                  placeholder="Mínimo 6 caracteres"
+                  placeholder="Deixe em branco para manter"
                   className="form-input"
-                  required
                   value={senha}
                   onChange={(e) => definirSenha(e.target.value)}
                 />
               </div>
-
               <div className="form-field">
                 <label htmlFor="role" className="form-label">
                   Função / Cargo
@@ -184,6 +185,23 @@ export default function PaginaNovoUsuario() {
                   ))}
                 </select>
               </div>
+            </div>
+
+            {/* Alternar Status (Ativo / Inativo) */}
+            <div className="form-field">
+              <label htmlFor="ativo" className="form-label">
+                Status do Usuário
+              </label>
+              <select
+                id="ativo"
+                className="form-select"
+                value={String(ativo)}
+                onChange={(e) => definirAtivo(e.target.value === "true")}
+                aria-label="Definir status ativo ou inativo"
+              >
+                <option value="true">Ativo (Permitir acesso ao sistema)</option>
+                <option value="false">Inativo (Bloquear todo acesso ao sistema)</option>
+              </select>
             </div>
           </div>
 
@@ -204,7 +222,7 @@ export default function PaginaNovoUsuario() {
               >
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
-              Prévia das Permissões do Cargo: {ROLE_LABELS[funcao]}
+              Permissões Atuais do Cargo: {ROLE_LABELS[funcao]}
             </h3>
             <div className="painel-permissoes__grid">
               {Object.entries(TITULOS_PERMISSOES).map(([permissaoKey, tituloExibido]) => {
@@ -267,7 +285,7 @@ export default function PaginaNovoUsuario() {
               disabled={carregando}
               style={{ minWidth: "120px" }}
             >
-              {carregando ? "Salvando..." : "Salvar Usuário"}
+              {carregando ? "Salvando..." : "Salvar Alterações"}
             </button>
           </div>
         </form>

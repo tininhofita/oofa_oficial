@@ -29,7 +29,7 @@ export async function atualizarPerfil(
       return { sucesso: false, erro: 'O nome completo deve conter pelo menos 3 caracteres.' }
     }
 
-    const clienteSupabase = await createClient()
+    const clienteSupabase = (await createClient()) as any
 
     // Obtém o usuário ativo na sessão
     const {

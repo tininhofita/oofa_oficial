@@ -55,6 +55,7 @@ export default async function LayoutAplicativo({ children }: PropriedadesLayout)
         nomeUsuario={nomeUsuario}
         emailUsuario={emailUsuario}
         avatarUrl={avatarUrl}
+        cargoUsuario={cargoUsuario}
       />
       
       <div className="layout-app__principal">
