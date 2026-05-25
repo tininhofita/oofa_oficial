@@ -261,6 +261,7 @@ export async function POST(request: NextRequest) {
                 .upsert({ id: nf.naturezaOperacao.id, descricao: nf.naturezaOperacao.descricao || null }, { onConflict: 'id' })
             } catch (e) {}
           }
+          let nomeContato: string | null = null
           if (nf.contato?.id) {
             let dadosContato = nf.contato
             // Se o contato da NFe não tem nome, busca o cadastro completo no Bling
@@ -270,6 +271,7 @@ export async function POST(request: NextRequest) {
                 if (resp?.data?.nome) dadosContato = { ...dadosContato, ...resp.data }
               } catch { /* best-effort */ }
             }
+            nomeContato = dadosContato.nome ?? null
             const contatoMapeado = mapearContato(dadosContato)
             if (contatoMapeado) {
               // Remove campos nulos para não sobrescrever valores existentes no banco
@@ -311,7 +313,7 @@ export async function POST(request: NextRequest) {
             frete_por_conta: transporte.fretePorConta ?? null,
             transportador_nome: transporte.transportador?.nome ?? null,
             transportador_documento: transporte.transportador?.numeroDocumento ?? null,
-            etiqueta_nome: etiqueta.nome || nf.contato?.nome || null,
+            etiqueta_nome: etiqueta.nome || nomeContato || nf.contato?.nome || null,
             etiqueta_endereco: etiqueta.endereco ?? null,
             etiqueta_numero: etiqueta.numero ?? null,
             etiqueta_complemento: etiqueta.complemento ?? null,
@@ -325,7 +327,7 @@ export async function POST(request: NextRequest) {
           // 2.1 Verifica se a nota já existe no banco local para estatísticas de importação, atualização e ignoradas
           const { data: notaExistente } = await supabase
             .from('nfe')
-            .select('situacao, valor_nota')
+            .select('situacao, valor_nota, etiqueta_nome')
             .eq('id', nf.id)
             .maybeSingle()
 
@@ -350,7 +352,15 @@ export async function POST(request: NextRequest) {
           }
 
           if (!deveGravar) {
-            // Se a nota for idêntica, ignoramos a gravação para economizar processamento e limites
+            // Se a nota for idêntica mas o nome do cliente está ausente, atualiza só o etiqueta_nome
+            if (nomeContato && !notaExistente?.etiqueta_nome) {
+              try {
+                await supabase
+                  .from('nfe')
+                  .update({ etiqueta_nome: nomeContato, atualizado_em: agora })
+                  .eq('id', nf.id)
+              } catch { /* best-effort */ }
+            }
             continue
           }
 
