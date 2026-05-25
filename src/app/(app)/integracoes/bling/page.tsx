@@ -26,11 +26,15 @@ export default async function IntegracaoBlingPage({ searchParams }: PageProps) {
   const supabase = (await createClient()) as any
 
   // 1. Busca os últimos eventos recebidos via webhook
-  const { data: eventos } = (await supabase
+  const { data: eventos, error: errEventos } = (await supabase
     .from('bling_eventos')
     .select('id, recurso, acao, bling_id, status, created_at')
     .order('created_at', { ascending: false })
-    .limit(20)) as unknown as { data: BlingEvento[] | null }
+    .limit(20)) as unknown as { data: BlingEvento[] | null; error: any }
+
+  if (errEventos) {
+    console.error('[Bling Config Page] Erro ao ler bling_eventos:', errEventos)
+  }
 
   // 2. Busca o status atual da conexão OAuth no banco
   const { data: config, error: errConfig } = await supabase
