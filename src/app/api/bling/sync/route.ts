@@ -262,12 +262,24 @@ export async function POST(request: NextRequest) {
             } catch (e) {}
           }
           if (nf.contato?.id) {
-            const contatoMapeado = mapearContato(nf.contato)
+            let dadosContato = nf.contato
+            // Se o contato da NFe não tem nome, busca o cadastro completo no Bling
+            if (!dadosContato.nome) {
+              try {
+                const resp = await blingGetWithRetry(`/contatos/${dadosContato.id}`, token)
+                if (resp?.data?.nome) dadosContato = { ...dadosContato, ...resp.data }
+              } catch { /* best-effort */ }
+            }
+            const contatoMapeado = mapearContato(dadosContato)
             if (contatoMapeado) {
+              // Remove campos nulos para não sobrescrever valores existentes no banco
+              const payload = Object.fromEntries(
+                Object.entries(contatoMapeado).filter(([, v]) => v !== null)
+              )
               try {
                 await supabase
                   .from('contatos')
-                  .upsert(contatoMapeado, { onConflict: 'id' })
+                  .upsert(payload, { onConflict: 'id' })
               } catch (e) {}
             }
           }
