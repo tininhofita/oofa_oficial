@@ -240,12 +240,15 @@ export default function PaginaDashboardComercial() {
       nota.nfe_itens?.forEach((item) => {
         const quantidade = Number(item.quantidade) || 0
         const tamanho = extrairTamanhoProduto(item.descricao)
-        mapaTamanhos[tamanho] = (mapaTamanhos[tamanho] || 0) + quantidade
+        // Ignora produtos sem tamanho (N/A)
+        if (tamanho && tamanho !== 'N/A') {
+          mapaTamanhos[tamanho] = (mapaTamanhos[tamanho] || 0) + quantidade
+        }
       })
     })
 
-    // Ordenar de forma lógica: PP, P, M, G, GG, XG, EG, Outros/NA
-    const ordemTamanhos = ['PP', 'P', 'M', 'G', 'GG', 'XG', 'EG', 'N/A']
+    // Ordenar de forma lógica: PP, P, M, G, GG, XG, EG
+    const ordemTamanhos = ['PP', 'P', 'M', 'G', 'GG', 'XG', 'EG']
     
     return Object.entries(mapaTamanhos)
       .map(([tamanho, quantidade]) => ({ tamanho, quantidade }))
@@ -537,6 +540,7 @@ export default function PaginaDashboardComercial() {
                         return (
                           <div key={index} className="grafico-barras-verticais__coluna">
                             <div className="grafico-barras-verticais__barra-container">
+                              <span className="grafico-barras-verticais__rotulo">{item.quantidade} un</span>
                               <div
                                 className="grafico-barras-verticais__barra"
                                 style={{ height: `${porcentagem}%` }}

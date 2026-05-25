@@ -431,10 +431,20 @@
 
 .grafico-barras-verticais__barra-container {
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  height: 80%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 90%;
   width: 100%;
+  gap: var(--space-1);
+}
+
+.grafico-barras-verticais__rotulo {
+  font-size: 10px;
+  font-weight: var(--fw-bold);
+  color: var(--color-success);
+  text-align: center;
+  white-space: nowrap;
 }
 
 .grafico-barras-verticais__barra {
