@@ -6,9 +6,9 @@ export function verificarTokenWebhook(request: Request): boolean {
   const authHeader = request.headers.get('Authorization')
   if (!authHeader) return false
 
-  const token = authHeader.startsWith('Bearer ')
-    ? authHeader.slice(7).trim()
-    : authHeader.trim()
+  if (!authHeader.startsWith('Bearer ')) return false
+  const token = authHeader.slice(7).trim()
+  if (!token) return false
 
   const secret = env.BLING_WEBHOOK_SECRET
   if (!secret) return false
@@ -35,7 +35,8 @@ export function parsearEnvelopeBling(body: unknown): EnvelopeParsed | null {
   if (!recurso) return null
 
   const partes = b.event.split('.')
-  const acao = partes[1] ?? 'unknown'
+  if (partes.length < 2) return null
+  const acao = partes[1]
 
   const envelope: BlingWebhookEnvelope = {
     eventId: typeof b.eventId === 'string' ? b.eventId : '',
