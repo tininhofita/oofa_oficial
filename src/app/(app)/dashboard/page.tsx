@@ -28,7 +28,6 @@ interface NotaFiscal {
   tipo_nota: 'NFe' | 'NFCe'
   situacao: number
   natureza_operacao_id: number | null
-  naturezas_operacao: NaturezaOperacao | null
   nfe_itens: ItemNotaFiscal[]
 }
 
@@ -113,7 +112,7 @@ export default function PaginaDashboardComercial() {
         const inicioISO = `${dataInicio}T00:00:00.000Z`
         const fimISO = `${dataFim}T23:59:59.999Z`
 
-        // 2. Query de Notas Fiscais com itens e naturezas
+        // 2. Query de Notas Fiscais com itens
         let consulta = clienteSupabase
           .from('nfe')
           .select(`
@@ -125,11 +124,6 @@ export default function PaginaDashboardComercial() {
             tipo_nota,
             situacao,
             natureza_operacao_id,
-            naturezas_operacao (
-              id,
-              descricao,
-              nome_customizado
-            ),
             nfe_itens (
               id,
               codigo,
@@ -152,7 +146,13 @@ export default function PaginaDashboardComercial() {
         definirNotasFiscais(dadosNotas || [])
       } catch (err: any) {
         console.error('Erro ao carregar dados do dashboard:', err)
-        definirErro('Não foi possível carregar as informações do dashboard. Verifique sua conexão ou tente novamente.')
+        console.error('Detalhes do erro:', {
+          mensagem: err?.message,
+          detalhes: err?.details,
+          dica: err?.hint,
+          codigo: err?.code
+        })
+        definirErro(`Não foi possível carregar as informações do dashboard: ${err?.message || 'Erro desconhecido'} (${err?.code || 'S/C'}). ${err?.details || ''}`)
       } finally {
         definirCarregando(false)
       }
@@ -196,8 +196,10 @@ export default function PaginaDashboardComercial() {
 
     notasFiscais.forEach((nota) => {
       const valor = Number(nota.valor_nota) || 0
-      const nat = nota.naturezas_operacao
       const chave = nota.natureza_operacao_id ? String(nota.natureza_operacao_id) : 'sem-natureza'
+      
+      // Encontra a natureza correspondente no estado local naturezasCadastradas
+      const nat = naturezasCadastradas.find((n) => String(n.id) === chave)
       const nome = nat ? (nat.nome_customizado || nat.descricao) : 'Sem Natureza Cadastrada'
 
       if (!mapaNaturezas[chave]) {
