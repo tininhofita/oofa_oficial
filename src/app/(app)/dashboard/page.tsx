@@ -35,6 +35,7 @@ interface NotaFiscal {
  * Página principal do Dashboard Comercial.
  * Exibe métricas de notas fiscais, fretes, gráficos de faturamento por natureza,
  * distribuição por tamanho de produto e produtos mais vendidos.
+ * Possui filtros globais de período, situação e naturezas de operação (múltipla escolha).
  * Desenvolvido seguindo as regras de nomenclatura em Português BR.
  */
 export default function PaginaDashboardComercial() {
@@ -44,16 +45,24 @@ export default function PaginaDashboardComercial() {
   const [dataFim, definirDataFim] = useState<string>('')
   const [situacaoFiltro, definirSituacaoFiltro] = useState<string>('autorizada') // Padrão: Autorizadas / Emitidas
 
+  // Estado do filtro global de Naturezas de Operação (múltipla escolha)
+  const [naturezasSelecionadas, definirNaturezasSelecionadas] = useState<string[]>([])
+  const [naturezasDropdownAberto, definirNaturezasDropdownAberto] = useState<boolean>(false)
+
   // Estados de dados e carregamento
   const [notasFiscais, definirNotasFiscais] = useState<NotaFiscal[]>([])
   const [naturezasCadastradas, definirNaturezasCadastradas] = useState<NaturezaOperacao[]>([])
   const [carregando, definirCarregando] = useState<boolean>(true)
   const [erro, definirErro] = useState<string | null>(null)
 
-  // Filtro local da seção de produtos mais vendidos
-  const [naturezaFiltroLocal, definirNaturezaFiltroLocal] = useState<string>('todas')
-
   const clienteSupabase = createClient() as any
+
+  // Função auxiliar para alternar a seleção de naturezas de operação
+  const alternarNatureza = (id: string) => {
+    definirNaturezasSelecionadas((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    )
+  }
 
   // Determinar datas com base no período selecionado
   useEffect(() => {
@@ -108,7 +117,7 @@ export default function PaginaDashboardComercial() {
         if (erroNaturezas) throw erroNaturezas
         definirNaturezasCadastradas(dadosNaturezas || [])
 
-        // Converter datas para formato de texto compatível com TIMESTAMP
+        // Converter datas para formato de texto compatível com TIMESTAMP sem fuso horário
         const inicioFormatado = `${dataInicio} 00:00:00`
         const fimFormatado = `${dataFim} 23:59:59`
 
@@ -195,9 +204,16 @@ export default function PaginaDashboardComercial() {
     return 'N/A'
   }
 
-  // --- CÁLCULO DE MÉTRICAS E CARDS ---
-  const notasNFe = notasFiscais.filter((n) => n.tipo_nota === 'NFe')
-  const notasNFCe = notasFiscais.filter((n) => n.tipo_nota === 'NFCe')
+  // --- FILTRAGEM GLOBAL POR NATUREZAS SELECIONADAS ---
+  const notasFiltradas = notasFiscais.filter((nota) => {
+    if (naturezasSelecionadas.length === 0) return true
+    const chave = nota.natureza_operacao_id ? String(nota.natureza_operacao_id) : 'sem-natureza'
+    return naturezasSelecionadas.includes(chave)
+  })
+
+  // --- CÁLCULO DE MÉTRICAS E CARDS ACUMULADOS ---
+  const notasNFe = notasFiltradas.filter((n) => n.tipo_nota === 'NFe')
+  const notasNFCe = notasFiltradas.filter((n) => n.tipo_nota === 'NFCe')
 
   const totalNFeQuantidade = notasNFe.length
   const totalNFeValor = notasNFe.reduce((total, n) => total + (Number(n.valor_nota) || 0), 0)
@@ -205,14 +221,14 @@ export default function PaginaDashboardComercial() {
   const totalNFCeQuantidade = notasNFCe.length
   const totalNFCeValor = notasNFCe.reduce((total, n) => total + (Number(n.valor_nota) || 0), 0)
 
-  const valorTotalFrete = notasFiscais.reduce((total, n) => total + (Number(n.valor_frete) || 0), 0)
+  const valorTotalFrete = notasFiltradas.reduce((total, n) => total + (Number(n.valor_frete) || 0), 0)
   const faturamentoConsolidado = totalNFeValor + totalNFCeValor
 
   // --- CÁLCULO DE FATURAMENTO POR NATUREZA DE OPERAÇÃO ---
   const obterFaturamentoPorNatureza = () => {
     const mapaNaturezas: Record<string, { nome: string; valor: number }> = {}
 
-    notasFiscais.forEach((nota) => {
+    notasFiltradas.forEach((nota) => {
       const valor = Number(nota.valor_nota) || 0
       const chave = nota.natureza_operacao_id ? String(nota.natureza_operacao_id) : 'sem-natureza'
       
@@ -236,7 +252,7 @@ export default function PaginaDashboardComercial() {
   const obterDistribuicaoPorTamanho = () => {
     const mapaTamanhos: Record<string, number> = {}
 
-    notasFiscais.forEach((nota) => {
+    notasFiltradas.forEach((nota) => {
       nota.nfe_itens?.forEach((item) => {
         const quantidade = Number(item.quantidade) || 0
         const tamanho = extrairTamanhoProduto(item.descricao)
@@ -269,13 +285,7 @@ export default function PaginaDashboardComercial() {
   const obterProdutosMaisVendidos = () => {
     const mapaProdutos: Record<string, { codigo: string; descricao: string; quantidade: number; valorTotal: number; tamanho: string }> = {}
 
-    notasFiscais.forEach((nota) => {
-      // Filtrar por natureza de operação na seção local
-      if (naturezaFiltroLocal !== 'todas') {
-        const natId = nota.natureza_operacao_id ? String(nota.natureza_operacao_id) : 'sem-natureza'
-        if (natId !== naturezaFiltroLocal) return
-      }
-
+    notasFiltradas.forEach((nota) => {
       nota.nfe_itens?.forEach((item) => {
         const chave = item.codigo || item.descricao
         const quantidade = Number(item.quantidade) || 0
@@ -368,6 +378,85 @@ export default function PaginaDashboardComercial() {
             <option value="pendente">Pendentes</option>
             <option value="cancelada">Canceladas</option>
           </select>
+        </div>
+
+        {/* Novo Filtro Global Multi-Select de Natureza de Operação */}
+        <div className="painel-filtros__grupo painel-filtros__grupo--multi">
+          <label className="painel-filtros__label">Natureza de Operação</label>
+          <div className="dropdown-multi">
+            <button
+              type="button"
+              className="dropdown-multi__botao"
+              onClick={() => definirNaturezasDropdownAberto(!naturezasDropdownAberto)}
+            >
+              <span className="dropdown-multi__selecionados">
+                {naturezasSelecionadas.length === 0
+                  ? 'Todas as Naturezas'
+                  : naturezasSelecionadas.length === 1
+                  ? naturezasCadastradas.find((n) => String(n.id) === naturezasSelecionadas[0])?.nome_customizado ||
+                    naturezasCadastradas.find((n) => String(n.id) === naturezasSelecionadas[0])?.descricao ||
+                    '1 Selecionada'
+                  : `${naturezasSelecionadas.length} selecionadas`}
+              </span>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={`dropdown-multi__seta ${naturezasDropdownAberto ? 'dropdown-multi__seta--aberta' : ''}`}
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+
+            {naturezasDropdownAberto && (
+              <>
+                <div className="dropdown-multi__backdrop" onClick={() => definirNaturezasDropdownAberto(false)} />
+                <div className="dropdown-multi__conteudo">
+                  <button
+                    type="button"
+                    className="dropdown-multi__opcao-limpar"
+                    onClick={() => definirNaturezasSelecionadas([])}
+                  >
+                    Limpar Seleção (Todas)
+                  </button>
+                  <div className="dropdown-multi__lista">
+                    {naturezasCadastradas.map((nat) => {
+                      const idStr = String(nat.id)
+                      const selecionado = naturezasSelecionadas.includes(idStr)
+                      return (
+                        <label key={nat.id} className="dropdown-multi__opcao">
+                          <input
+                            type="checkbox"
+                            className="dropdown-multi__checkbox"
+                            checked={selecionado}
+                            onChange={() => alternarNatureza(idStr)}
+                          />
+                          <span className="dropdown-multi__texto">
+                            {nat.nome_customizado || nat.descricao}
+                          </span>
+                        </label>
+                      )
+                    })}
+                    {/* Opção para Notas sem Natureza mapeada */}
+                    <label className="dropdown-multi__opcao">
+                      <input
+                        type="checkbox"
+                        className="dropdown-multi__checkbox"
+                        checked={naturezasSelecionadas.includes('sem-natureza')}
+                        onChange={() => alternarNatureza('sem-natureza')}
+                      />
+                      <span className="dropdown-multi__texto">Sem Natureza Cadastrada</span>
+                    </label>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </section>
 
@@ -467,7 +556,7 @@ export default function PaginaDashboardComercial() {
               </div>
             </div>
 
-            {/* Card Faturamento Geral */}
+            {/* Card Faturamento Consolidado */}
             <div className="card-metrica">
               <div className="card-metrica__cabecalho">
                 <span className="card-metrica__titulo">Faturamento Consolidado</span>
@@ -480,7 +569,7 @@ export default function PaginaDashboardComercial() {
               </div>
               <p className="card-metrica__valor">{formatarMoeda(faturamentoConsolidado)}</p>
               <div className="card-metrica__subtitulo-grupo">
-                <span className="card-metrica__badge card-metrica__badge--indigo">{notasFiscais.length} notas no total</span>
+                <span className="card-metrica__badge card-metrica__badge--indigo">{notasFiltradas.length} notas no total</span>
                 <span className="card-metrica__diferenca-texto">NF-e + NFC-e</span>
               </div>
             </div>
@@ -563,24 +652,6 @@ export default function PaginaDashboardComercial() {
             <div className="bloco-visualizacao__cabecalho-produtos">
               <div className="bloco-visualizacao__topo">
                 <h2 className="bloco-visualizacao__titulo">Produtos Mais Vendidos</h2>
-              </div>
-              
-              {/* Filtro local por Natureza de Operação */}
-              <div className="produtos-bloco__filtro">
-                <label className="produtos-bloco__filtro-label">Natureza de Operação:</label>
-                <select
-                  className="produtos-bloco__filtro-select"
-                  value={naturezaFiltroLocal}
-                  onChange={(e) => definirNaturezaFiltroLocal(e.target.value)}
-                >
-                  <option value="todas">Todas as Naturezas</option>
-                  {naturezasCadastradas.map((nat) => (
-                    <option key={nat.id} value={String(nat.id)}>
-                      {nat.nome_customizado || nat.descricao}
-                    </option>
-                  ))}
-                  <option value="sem-natureza">Sem Natureza Cadastrada</option>
-                </select>
               </div>
             </div>
 

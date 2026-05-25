@@ -669,3 +669,142 @@
     width: 18px;
   }
 }
+
+/* Custom Multi-select Dropdown para Filtro de Naturezas */
+.dropdown-multi {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-multi__botao {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  min-height: 38px;
+  cursor: pointer;
+}
+
+.dropdown-multi__botao:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.dropdown-multi__selecionados {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90%;
+  text-align: left;
+}
+
+.dropdown-multi__seta {
+  transition: transform var(--transition-normal);
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.dropdown-multi__seta--aberta {
+  transform: rotate(180deg);
+}
+
+.dropdown-multi__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  cursor: default;
+}
+
+.dropdown-multi__conteudo {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  min-width: 260px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  z-index: 50;
+  animation: esmaecerEntrada var(--transition-fast) ease-out;
+}
+
+.dropdown-multi__opcao-limpar {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 11px;
+  font-weight: var(--fw-bold);
+  text-transform: uppercase;
+  text-align: left;
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast);
+}
+
+.dropdown-multi__opcao-limpar:hover {
+  background-color: var(--color-primary-light);
+}
+
+.dropdown-multi__lista {
+  display: flex;
+  flex-direction: column;
+  max-height: 220px;
+  overflow-y: auto;
+  gap: 2px;
+  padding-right: var(--space-1);
+}
+
+/* Custom Scrollbar para Dropdown Lista */
+.dropdown-multi__lista::-webkit-scrollbar {
+  width: 4px;
+}
+.dropdown-multi__lista::-webkit-scrollbar-thumb {
+  background-color: var(--color-gray-300);
+  border-radius: var(--radius-full);
+}
+
+.dropdown-multi__opcao {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  user-select: none;
+}
+
+.dropdown-multi__opcao:hover {
+  background-color: var(--color-gray-50);
+}
+
+.dropdown-multi__checkbox {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.dropdown-multi__texto {
+  font-size: 12px;
+  color: var(--color-text-primary);
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
