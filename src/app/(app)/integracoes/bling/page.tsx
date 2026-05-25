@@ -6,6 +6,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { Badge } from '@/components/ui/Badge'
 import { BlingUrlCopiar } from './BlingUrlCopiar'
 import MapeamentoNaturezas from './MapeamentoNaturezas'
+import TabelaEventosBling from './TabelaEventosBling'
 import './integracoes-bling.css'
 
 interface BlingEvento {
@@ -14,6 +15,8 @@ interface BlingEvento {
   acao: string
   bling_id: number | null
   status: 'recebido' | 'processado' | 'erro'
+  payload: any
+  erro_mensagem: string | null
   created_at: string
 }
 
@@ -28,7 +31,7 @@ export default async function IntegracaoBlingPage({ searchParams }: PageProps) {
   // 1. Busca os últimos eventos recebidos via webhook
   const { data: eventos, error: errEventos } = (await supabase
     .from('bling_eventos')
-    .select('id, recurso, acao, bling_id, status, created_at')
+    .select('id, recurso, acao, bling_id, status, payload, erro_mensagem, created_at')
     .order('created_at', { ascending: false })
     .limit(20)) as unknown as { data: BlingEvento[] | null; error: any }
 
@@ -193,56 +196,7 @@ export default async function IntegracaoBlingPage({ searchParams }: PageProps) {
 
         <MapeamentoNaturezas naturezasIniciais={(naturezas || []) as any} />
 
-        <section className="bling-integracao__secao">
-          <h2 className="bling-integracao__titulo-secao">Últimos Eventos</h2>
-          {eventos && eventos.length > 0 ? (
-            <table className="bling-integracao__tabela">
-              <thead>
-                <tr>
-                  <th>Recurso</th>
-                  <th>Ação</th>
-                  <th>ID no Bling</th>
-                  <th>Status</th>
-                  <th>Recebido em</th>
-                </tr>
-              </thead>
-              <tbody>
-                {eventos.map((evento) => (
-                  <tr key={evento.id}>
-                    <td>
-                      {MAPEAMENTO_RECURSO_BLING[evento.recurso as RecursoBling] ?? evento.recurso}
-                    </td>
-                    <td>{evento.acao}</td>
-                    <td>{evento.bling_id ?? '—'}</td>
-                    <td>
-                      <Badge
-                        variante={
-                          evento.status === 'processado'
-                            ? 'sucesso'
-                            : evento.status === 'erro'
-                            ? 'erro'
-                            : 'inativo'
-                        }
-                      >
-                        {evento.status}
-                      </Badge>
-                    </td>
-                    <td>
-                      {new Intl.DateTimeFormat('pt-BR', {
-                        dateStyle: 'short',
-                        timeStyle: 'short',
-                      }).format(new Date(evento.created_at))}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <p className="bling-integracao__sem-eventos">
-              Nenhum evento recebido ainda. Configure o webhook no Bling para começar.
-            </p>
-          )}
-        </section>
+        <TabelaEventosBling eventos={(eventos || []) as any} />
 
       </div>
     </PageContainer>

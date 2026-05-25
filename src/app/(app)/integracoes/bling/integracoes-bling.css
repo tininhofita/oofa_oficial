@@ -317,3 +317,314 @@
   }
 }
 
+/* ============================================================
+   Bling Webhooks Inspect Modal Styles (Premium UI)
+   ============================================================ */
+
+.bling-integracao__tabela-acao-badge {
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: var(--fs-text-xs);
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.02em;
+}
+
+.bling-integracao__botao-tabela-detalhes {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: var(--fs-text-xs);
+  font-weight: var(--fw-medium);
+  padding: var(--space-1-5, 6px) var(--space-3, 12px);
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.bling-integracao__botao-tabela-detalhes:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: rgba(2, 132, 199, 0.04);
+}
+
+.bling-integracao__botao-tabela-detalhes svg {
+  flex-shrink: 0;
+}
+
+/* Modal Overlay (Glassmorphism) */
+.bling-modal__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+/* Modal Box Container */
+.bling-modal__content {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg, 12px);
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 10px 10px -5px rgba(0, 0, 0, 0.06);
+  animation: modalSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+/* Modal Header */
+.bling-modal__header {
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bling-modal__title {
+  font-size: var(--fs-text-md, 16px);
+  font-weight: var(--fw-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.bling-modal__subtitle {
+  font-size: var(--fs-text-xs);
+  color: var(--color-text-secondary);
+  display: block;
+  margin-top: 4px;
+}
+
+.bling-modal__subtitle-acao {
+  text-transform: uppercase;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.04em;
+  color: var(--color-primary);
+}
+
+.bling-modal__close-btn {
+  border: none;
+  background: transparent;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.bling-modal__close-btn:hover {
+  background: var(--color-gray-50);
+  color: var(--color-text-primary);
+}
+
+/* Modal Body */
+.bling-modal__body {
+  padding: var(--space-6);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* Metagrid Section */
+.bling-modal__meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  background: var(--color-gray-50);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.bling-modal__meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bling-modal__meta-label {
+  font-size: var(--fs-label, 10px);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.05em;
+}
+
+.bling-modal__meta-value {
+  font-size: var(--fs-text-sm);
+  color: var(--color-text-primary);
+  font-weight: var(--fw-medium);
+}
+
+.bling-modal__meta-value.monospace {
+  font-family: monospace;
+  font-size: var(--fs-text-xs);
+  background: var(--color-surface);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  width: fit-content;
+}
+
+/* Error Container Alert */
+.bling-modal__erro-container {
+  background: rgba(239, 68, 68, 0.04);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.bling-modal__erro-titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: #b91c1c;
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-text-sm);
+}
+
+.bling-modal__erro-texto {
+  font-size: var(--fs-text-sm);
+  color: #7f1d1d;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* JSON Code Box */
+.bling-modal__json-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.bling-modal__json-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bling-modal__json-title {
+  font-size: var(--fs-label, 10px);
+  font-weight: var(--fw-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.bling-modal__btn-copiar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5, 6px);
+  font-size: var(--fs-text-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.bling-modal__btn-copiar:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: rgba(2, 132, 199, 0.04);
+}
+
+.bling-modal__btn-copiar--sucesso {
+  color: #10b981 !important;
+  border-color: #10b981 !important;
+  background: rgba(16, 185, 129, 0.04) !important;
+}
+
+.bling-modal__json-wrapper {
+  background: #0f172a;
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.bling-modal__json-pre {
+  margin: 0;
+  font-family: monospace;
+  font-size: 13px;
+  color: #cbd5e1;
+  overflow-x: auto;
+  max-height: 280px;
+  line-height: 1.6;
+}
+
+/* Modal Footer */
+.bling-modal__footer {
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: flex-end;
+  background: var(--color-gray-50);
+}
+
+.bling-modal__btn-fechar {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  font-size: var(--fs-text-sm);
+  font-weight: var(--fw-medium);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.bling-modal__btn-fechar:hover {
+  background: var(--color-gray-50);
+  border-color: var(--color-text-secondary);
+}
+
+/* Animations */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideUp {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
