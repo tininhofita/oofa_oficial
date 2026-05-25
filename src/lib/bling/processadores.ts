@@ -95,32 +95,29 @@ async function processarPedidoVenda(
 async function processarNotaFiscal(
   supabase: ClienteSupabase,
   eventoId: string,
-  acao: string,
+  _acao: string,
   data: Record<string, unknown>
 ): Promise<{ ok: boolean; erro?: string }> {
   const d = data as unknown as BlingNotaFiscalDados
 
   if (!d.id) return { ok: false, erro: 'id ausente no payload de nota fiscal' }
 
-  const { error } = await supabase.from('bling_notas_fiscais').insert({
+  const { error } = await supabase.from('nfe').upsert({
+    id: d.id,
     bling_evento_id: eventoId,
-    bling_id: d.id,
-    acao,
-    tipo: d.tipo ?? null,
-    situacao: d.situacao ?? null,
+    tipo_nota: 'NFe',
+    tipo: typeof d.tipo === 'number' ? d.tipo : null,
+    situacao: typeof d.situacao === 'number' ? d.situacao : null,
     numero: d.numero ?? null,
     serie: d.serie ?? null,
     data_emissao: d.dataEmissao ?? null,
     data_operacao: d.dataOperacao ?? null,
     contato_id: d.contato?.id ?? null,
-    contato_nome: d.contato?.nome ?? null,
-    contato_documento: d.contato?.numeroDocumento ?? null,
-    loja_id: d.loja?.id ?? null,
     chave_acesso: d.chaveAcesso ?? null,
     link_danfe: d.linkDanfe ?? null,
     link_pdf: d.linkPDF ?? null,
-    payload_completo: data as unknown as Json,
-  })
+    atualizado_em: new Date().toISOString(),
+  }, { onConflict: 'id' })
 
   if (error) return { ok: false, erro: error.message }
   return { ok: true }
@@ -129,33 +126,30 @@ async function processarNotaFiscal(
 async function processarNFCe(
   supabase: ClienteSupabase,
   eventoId: string,
-  acao: string,
+  _acao: string,
   data: Record<string, unknown>
 ): Promise<{ ok: boolean; erro?: string }> {
   const d = data as unknown as BlingNotaFiscalConsumidorDados
 
   if (!d.id) return { ok: false, erro: 'id ausente no payload de NFC-e' }
 
-  const { error } = await supabase.from('bling_notas_fiscais_consumidor').insert({
+  const { error } = await supabase.from('nfe').upsert({
+    id: d.id,
     bling_evento_id: eventoId,
-    bling_id: d.id,
-    acao,
-    tipo: d.tipo ?? null,
-    situacao: d.situacao ?? null,
+    tipo_nota: 'NFCe',
+    tipo: typeof d.tipo === 'number' ? d.tipo : null,
+    situacao: typeof d.situacao === 'number' ? d.situacao : null,
     numero: d.numero ?? null,
     serie: d.serie ?? null,
     valor_nota: d.valorNota ?? null,
     data_emissao: d.dataEmissao ?? null,
     data_operacao: d.dataOperacao ?? null,
     contato_id: d.contato?.id ?? null,
-    contato_nome: d.contato?.nome ?? null,
-    contato_documento: d.contato?.numeroDocumento ?? null,
-    loja_id: d.loja?.id ?? null,
     chave_acesso: d.chaveAcesso ?? null,
     link_danfe: d.linkDanfe ?? null,
     link_pdf: d.linkPDF ?? null,
-    payload_completo: data as unknown as Json,
-  })
+    atualizado_em: new Date().toISOString(),
+  }, { onConflict: 'id' })
 
   if (error) return { ok: false, erro: error.message }
   return { ok: true }

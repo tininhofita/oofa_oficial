@@ -160,98 +160,96 @@ export type Database = {
         Update: Record<string, never>
         Relationships: []
       }
-      bling_notas_fiscais: {
+      nfe: {
         Row: {
-          id: string
+          id: number
           bling_evento_id: string | null
-          bling_id: number
-          acao: string
-          tipo: string | null
-          situacao: string | null
+          tipo: number | null
+          situacao: number | null
           numero: string | null
           serie: number | null
           data_emissao: string | null
           data_operacao: string | null
-          contato_id: number | null
-          contato_nome: string | null
-          contato_documento: string | null
-          loja_id: number | null
           chave_acesso: string | null
-          link_danfe: string | null
-          link_pdf: string | null
-          payload_completo: Json
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          bling_evento_id?: string | null
-          bling_id: number
-          acao: string
-          tipo?: string | null
-          situacao?: string | null
-          numero?: string | null
-          serie?: number | null
-          data_emissao?: string | null
-          data_operacao?: string | null
-          contato_id?: number | null
-          contato_nome?: string | null
-          contato_documento?: string | null
-          loja_id?: number | null
-          chave_acesso?: string | null
-          link_danfe?: string | null
-          link_pdf?: string | null
-          payload_completo: Json
-          created_at?: string
-        }
-        Update: Record<string, never>
-        Relationships: []
-      }
-      bling_notas_fiscais_consumidor: {
-        Row: {
-          id: string
-          bling_evento_id: string | null
-          bling_id: number
-          acao: string
-          tipo: string | null
-          situacao: string | null
-          numero: string | null
-          serie: number | null
           valor_nota: number | null
-          data_emissao: string | null
-          data_operacao: string | null
-          contato_id: number | null
-          contato_nome: string | null
-          contato_documento: string | null
-          loja_id: number | null
-          chave_acesso: string | null
+          valor_frete: number | null
+          valor_desconto: number | null
+          finalidade: number | null
+          tipo_nota: string | null
+          xml: string | null
           link_danfe: string | null
           link_pdf: string | null
-          payload_completo: Json
-          created_at: string
+          optante_simples_nacional: boolean
+          numero_pedido_loja: string | null
+          contato_id: number | null
+          natureza_operacao_id: number | null
+          canal_venda_id: number | null
+          vendedor_id: number | null
+          frete_por_conta: number | null
+          transportador_nome: string | null
+          transportador_documento: string | null
+          etiqueta_nome: string | null
+          etiqueta_endereco: string | null
+          etiqueta_numero: string | null
+          etiqueta_complemento: string | null
+          etiqueta_municipio: string | null
+          etiqueta_uf: string | null
+          etiqueta_cep: string | null
+          etiqueta_bairro: string | null
+          criado_em: string
+          atualizado_em: string
         }
         Insert: {
-          id?: string
+          id: number
           bling_evento_id?: string | null
-          bling_id: number
-          acao: string
-          tipo?: string | null
-          situacao?: string | null
+          tipo?: number | null
+          situacao?: number | null
           numero?: string | null
           serie?: number | null
-          valor_nota?: number | null
           data_emissao?: string | null
           data_operacao?: string | null
-          contato_id?: number | null
-          contato_nome?: string | null
-          contato_documento?: string | null
-          loja_id?: number | null
           chave_acesso?: string | null
+          valor_nota?: number | null
+          valor_frete?: number | null
+          valor_desconto?: number | null
+          finalidade?: number | null
+          tipo_nota?: string | null
+          xml?: string | null
           link_danfe?: string | null
           link_pdf?: string | null
-          payload_completo: Json
-          created_at?: string
+          optante_simples_nacional?: boolean
+          numero_pedido_loja?: string | null
+          contato_id?: number | null
+          natureza_operacao_id?: number | null
+          canal_venda_id?: number | null
+          vendedor_id?: number | null
+          frete_por_conta?: number | null
+          transportador_nome?: string | null
+          transportador_documento?: string | null
+          etiqueta_nome?: string | null
+          etiqueta_endereco?: string | null
+          etiqueta_numero?: string | null
+          etiqueta_complemento?: string | null
+          etiqueta_municipio?: string | null
+          etiqueta_uf?: string | null
+          etiqueta_cep?: string | null
+          etiqueta_bairro?: string | null
+          criado_em?: string
+          atualizado_em?: string
         }
-        Update: Record<string, never>
+        Update: {
+          bling_evento_id?: string | null
+          tipo?: number | null
+          situacao?: number | null
+          numero?: string | null
+          chave_acesso?: string | null
+          valor_nota?: number | null
+          tipo_nota?: string | null
+          link_danfe?: string | null
+          link_pdf?: string | null
+          contato_id?: number | null
+          atualizado_em?: string
+        }
         Relationships: []
       }
     }
