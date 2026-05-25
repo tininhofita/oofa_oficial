@@ -26,4 +26,5 @@ export const env = {
   NUVEMSHOP_CLIENT_ID:           process.env.NUVEMSHOP_CLIENT_ID ?? '',
   NUVEMSHOP_CLIENT_SECRET:       process.env.NUVEMSHOP_CLIENT_SECRET ?? '',
   NUVEMSHOP_WEBHOOK_SECRET:      process.env.NUVEMSHOP_WEBHOOK_SECRET ?? '',
+  NEXT_PUBLIC_APP_URL:           process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000',
 } as const
