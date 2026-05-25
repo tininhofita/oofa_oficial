@@ -314,6 +314,13 @@ export default function PaginaDashboardComercial() {
 
   const produtosMaisVendidos = obterProdutosMaisVendidos()
 
+  // --- PRÉ-FILTRAGEM DE NATUREZAS DE OPERAÇÃO COM MOVIMENTAÇÃO NO PERÍODO ---
+  const naturezasComMovimentacao = naturezasCadastradas.filter((nat) => {
+    return notasFiscais.some((nota) => String(nota.natureza_operacao_id) === String(nat.id))
+  })
+
+  const temNotasSemNatureza = notasFiscais.some((nota) => !nota.natureza_operacao_id)
+
   return (
     <div className="dashboard-comercial">
       {/* Cabeçalho do Dashboard */}
@@ -425,33 +432,43 @@ export default function PaginaDashboardComercial() {
                     Limpar Seleção (Todas)
                   </button>
                   <div className="dropdown-multi__lista">
-                    {naturezasCadastradas.map((nat) => {
-                      const idStr = String(nat.id)
-                      const selecionado = naturezasSelecionadas.includes(idStr)
-                      return (
-                        <label key={nat.id} className="dropdown-multi__opcao">
-                          <input
-                            type="checkbox"
-                            className="dropdown-multi__checkbox"
-                            checked={selecionado}
-                            onChange={() => alternarNatureza(idStr)}
-                          />
-                          <span className="dropdown-multi__texto">
-                            {nat.nome_customizado || nat.descricao}
-                          </span>
-                        </label>
-                      )
-                    })}
-                    {/* Opção para Notas sem Natureza mapeada */}
-                    <label className="dropdown-multi__opcao">
-                      <input
-                        type="checkbox"
-                        className="dropdown-multi__checkbox"
-                        checked={naturezasSelecionadas.includes('sem-natureza')}
-                        onChange={() => alternarNatureza('sem-natureza')}
-                      />
-                      <span className="dropdown-multi__texto">Sem Natureza Cadastrada</span>
-                    </label>
+                    {naturezasComMovimentacao.length === 0 && !temNotasSemNatureza ? (
+                      <div className="dropdown-multi__vazio">
+                        Nenhuma natureza com movimentação.
+                      </div>
+                    ) : (
+                      <>
+                        {naturezasComMovimentacao.map((nat) => {
+                          const idStr = String(nat.id)
+                          const selecionado = naturezasSelecionadas.includes(idStr)
+                          return (
+                            <label key={nat.id} className="dropdown-multi__opcao">
+                              <input
+                                type="checkbox"
+                                className="dropdown-multi__checkbox"
+                                checked={selecionado}
+                                onChange={() => alternarNatureza(idStr)}
+                              />
+                              <span className="dropdown-multi__texto">
+                                {nat.nome_customizado || nat.descricao}
+                              </span>
+                            </label>
+                          )
+                        })}
+                        {/* Opção para Notas sem Natureza mapeada, exibida apenas se houver notas sem natureza */}
+                        {temNotasSemNatureza && (
+                          <label className="dropdown-multi__opcao">
+                            <input
+                              type="checkbox"
+                              className="dropdown-multi__checkbox"
+                              checked={naturezasSelecionadas.includes('sem-natureza')}
+                              onChange={() => alternarNatureza('sem-natureza')}
+                            />
+                            <span className="dropdown-multi__texto">Sem Natureza Cadastrada</span>
+                          </label>
+                        )}
+                      </>
+                    )}
                   </div>
                 </div>
               </>

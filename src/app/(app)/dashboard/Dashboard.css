@@ -808,3 +808,11 @@
   text-overflow: ellipsis;
 }
 
+.dropdown-multi__vazio {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  font-style: italic;
+  padding: var(--space-4) 0;
+}
+
