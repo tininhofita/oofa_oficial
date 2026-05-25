@@ -61,8 +61,8 @@ export interface BlingPedidoVendaDados {
 
 export interface BlingNotaFiscalDados {
   id: number
-  tipo?: string        // "E" (entrada) | "S" (saída)
-  situacao?: string    // "A" (autorizada), "C" (cancelada), etc.
+  tipo?: number
+  situacao?: number
   numero?: string
   serie?: number
   dataEmissao?: string
@@ -70,14 +70,37 @@ export interface BlingNotaFiscalDados {
   chaveAcesso?: string
   linkDanfe?: string
   linkPDF?: string
-  contato?: { id?: number; nome: string; numeroDocumento: string }
+  linkPdf?: string
+  valorNota?: number
+  valorFrete?: number
+  valorDesconto?: number
+  finalidade?: number
+  xml?: string
+  optanteSimplesNacional?: boolean
+  numeroPedidoLoja?: string
+  contato?: { id?: number; nome?: string; tipoPessoa?: string; numeroDocumento?: string }
   loja?: { id: number }
+  naturezaOperacao?: { id: number }
+  canalVenda?: { id: number }
+  vendedor?: { id: number }
+  fretePorConta?: number
+  transportador?: { nome?: string; documento?: string }
+  etiqueta?: {
+    nome?: string
+    endereco?: string
+    numero?: string
+    complemento?: string
+    municipio?: string
+    uf?: string
+    cep?: string
+    bairro?: string
+  }
 }
 
 export interface BlingNotaFiscalConsumidorDados {
   id: number
-  tipo?: string
-  situacao?: string
+  tipo?: number
+  situacao?: number
   numero?: string
   serie?: number
   valorNota?: number
@@ -86,6 +109,25 @@ export interface BlingNotaFiscalConsumidorDados {
   chaveAcesso?: string
   linkDanfe?: string
   linkPDF?: string
-  contato?: { id?: number; nome: string; numeroDocumento?: string }
+  linkPdf?: string
+  valorFrete?: number
+  valorDesconto?: number
+  xml?: string
+  contato?: { id?: number; nome?: string; tipoPessoa?: string; numeroDocumento?: string }
   loja?: { id: number }
+  naturezaOperacao?: { id: number }
+  canalVenda?: { id: number }
+  vendedor?: { id: number }
+  fretePorConta?: number
+  transportador?: { nome?: string; documento?: string }
+  etiqueta?: {
+    nome?: string
+    endereco?: string
+    numero?: string
+    complemento?: string
+    municipio?: string
+    uf?: string
+    cep?: string
+    bairro?: string
+  }
 }

@@ -7,6 +7,7 @@ import type {
   BlingNotaFiscalDados,
   BlingNotaFiscalConsumidorDados,
 } from './types'
+import { blingGetWithRetry } from './client'
 
 type ClienteSupabase = SupabaseClient<Database>
 
@@ -106,13 +107,14 @@ async function processarNotaFiscal(
     id: d.id,
     bling_evento_id: eventoId,
     tipo_nota: 'NFe',
-    tipo: typeof d.tipo === 'number' ? d.tipo : null,
-    situacao: typeof d.situacao === 'number' ? d.situacao : null,
+    tipo: d.tipo ?? null,
+    situacao: d.situacao ?? null,
     numero: d.numero ?? null,
     serie: d.serie ?? null,
     data_emissao: d.dataEmissao ?? null,
     data_operacao: d.dataOperacao ?? null,
     contato_id: d.contato?.id ?? null,
+    natureza_operacao_id: d.naturezaOperacao?.id ?? null,
     chave_acesso: d.chaveAcesso ?? null,
     link_danfe: d.linkDanfe ?? null,
     link_pdf: d.linkPDF ?? null,
@@ -120,6 +122,8 @@ async function processarNotaFiscal(
   }, { onConflict: 'id' })
 
   if (error) return { ok: false, erro: error.message }
+
+  await enriquecerNfe(supabase, d.id, 'NFe').catch(() => null)
   return { ok: true }
 }
 
@@ -137,14 +141,15 @@ async function processarNFCe(
     id: d.id,
     bling_evento_id: eventoId,
     tipo_nota: 'NFCe',
-    tipo: typeof d.tipo === 'number' ? d.tipo : null,
-    situacao: typeof d.situacao === 'number' ? d.situacao : null,
+    tipo: d.tipo ?? null,
+    situacao: d.situacao ?? null,
     numero: d.numero ?? null,
     serie: d.serie ?? null,
     valor_nota: d.valorNota ?? null,
     data_emissao: d.dataEmissao ?? null,
     data_operacao: d.dataOperacao ?? null,
     contato_id: d.contato?.id ?? null,
+    natureza_operacao_id: d.naturezaOperacao?.id ?? null,
     chave_acesso: d.chaveAcesso ?? null,
     link_danfe: d.linkDanfe ?? null,
     link_pdf: d.linkPDF ?? null,
@@ -152,5 +157,65 @@ async function processarNFCe(
   }, { onConflict: 'id' })
 
   if (error) return { ok: false, erro: error.message }
+
+  await enriquecerNfe(supabase, d.id, 'NFCe').catch(() => null)
   return { ok: true }
+}
+
+async function enriquecerNfe(
+  supabase: ClienteSupabase,
+  id: number,
+  tipoNota: 'NFe' | 'NFCe'
+): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db = supabase as any
+
+  const { data: config } = await db
+    .from('integracao_bling')
+    .select('access_token, expires_at')
+    .limit(1)
+    .maybeSingle()
+
+  if (!config?.access_token) return
+  if (config.expires_at && new Date(config.expires_at) <= new Date()) return
+
+  const endpoint = tipoNota === 'NFe' ? `/nfe/${id}` : `/nfce/${id}`
+  const resposta = await blingGetWithRetry(endpoint, config.access_token)
+  const d = resposta?.data as BlingNotaFiscalDados | null
+  if (!d) return
+
+  await db.from('nfe').update({
+    tipo: d.tipo ?? null,
+    situacao: d.situacao ?? null,
+    numero: d.numero ?? null,
+    serie: d.serie ?? null,
+    data_emissao: d.dataEmissao ?? null,
+    data_operacao: d.dataOperacao ?? null,
+    chave_acesso: d.chaveAcesso ?? null,
+    link_danfe: d.linkDanfe ?? null,
+    link_pdf: d.linkPdf ?? d.linkPDF ?? null,
+    valor_nota: d.valorNota ?? null,
+    valor_frete: d.valorFrete ?? null,
+    valor_desconto: d.valorDesconto ?? null,
+    finalidade: d.finalidade ?? null,
+    xml: d.xml ?? null,
+    optante_simples_nacional: d.optanteSimplesNacional ?? false,
+    numero_pedido_loja: d.numeroPedidoLoja ?? null,
+    contato_id: d.contato?.id ?? null,
+    natureza_operacao_id: d.naturezaOperacao?.id ?? null,
+    canal_venda_id: d.canalVenda?.id ?? null,
+    vendedor_id: d.vendedor?.id ?? null,
+    frete_por_conta: d.fretePorConta ?? null,
+    transportador_nome: d.transportador?.nome ?? null,
+    transportador_documento: d.transportador?.documento ?? null,
+    etiqueta_nome: d.etiqueta?.nome ?? null,
+    etiqueta_endereco: d.etiqueta?.endereco ?? null,
+    etiqueta_numero: d.etiqueta?.numero ?? null,
+    etiqueta_complemento: d.etiqueta?.complemento ?? null,
+    etiqueta_municipio: d.etiqueta?.municipio ?? null,
+    etiqueta_uf: d.etiqueta?.uf ?? null,
+    etiqueta_cep: d.etiqueta?.cep ?? null,
+    etiqueta_bairro: d.etiqueta?.bairro ?? null,
+    atualizado_em: new Date().toISOString(),
+  }).eq('id', id)
 }
