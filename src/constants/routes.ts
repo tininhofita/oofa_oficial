@@ -26,6 +26,9 @@ export const ROUTES = {
   INTEGRACOES:   '/integracoes',
   CONFIGURACOES: '/configuracoes',
   PERFIL:        '/perfil',
+  PREVISOES:             '/previsoes',
+  PREVISOES_CUSTOS:      '/previsoes/custos',
+  PREVISOES_FATURAMENTO: '/previsoes/faturamento',
 
   // API
   API: {

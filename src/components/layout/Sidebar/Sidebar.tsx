@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useInterfaceUsuario } from '@/stores/ui.store'
@@ -12,10 +13,16 @@ interface PropriedadesBarraLateral {
   avatarUrl?: string | null
 }
 
+interface SubitemNavegacao {
+  titulo: string
+  link: string
+}
+
 interface ItemNavegacao {
   titulo: string
   link: string
   icone: React.ReactNode
+  subitens?: SubitemNavegacao[]
 }
 
 /**
@@ -25,6 +32,24 @@ interface ItemNavegacao {
 export function BarraLateral({ nomeUsuario, emailUsuario, avatarUrl }: PropriedadesBarraLateral) {
   const rotaAtual = usePathname()
   const { barraLateralRecolhida } = useInterfaceUsuario()
+  const [submenusAbertos, definirSubmenusAbertos] = useState<Record<string, boolean>>({})
+
+  // Efeito para abrir automaticamente o submenu correspondente à rota atual
+  useEffect(() => {
+    itensMenu.forEach((item) => {
+      if (item.subitens && item.subitens.some((subitem) => rotaAtual.startsWith(subitem.link))) {
+        definirSubmenusAbertos((anterior) => ({ ...anterior, [item.link]: true }))
+      }
+    })
+  }, [rotaAtual])
+
+  // Função em Português para alternar a exibição do submenu
+  const alternarSubmenu = (link: string) => {
+    definirSubmenusAbertos((anterior) => ({
+      ...anterior,
+      [link]: !anterior[link]
+    }))
+  }
 
   // Função para verificar se a rota do link está ativa no momento
   const verificarAtivo = (link: string) => {
@@ -104,6 +129,26 @@ export function BarraLateral({ nomeUsuario, emailUsuario, avatarUrl }: Proprieda
       )
     },
     {
+      titulo: 'Previsões',
+      link: ROUTES.PREVISOES,
+      icone: (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 3v18h18" />
+          <path d="m19 9-5 5-4-4-3 3" />
+        </svg>
+      ),
+      subitens: [
+        {
+          titulo: 'Custos',
+          link: ROUTES.PREVISOES_CUSTOS
+        },
+        {
+          titulo: 'Faturamento',
+          link: ROUTES.PREVISOES_FATURAMENTO
+        }
+      ]
+    },
+    {
       titulo: 'Relatórios',
       link: ROUTES.RELATORIOS,
       icone: (
@@ -179,7 +224,78 @@ export function BarraLateral({ nomeUsuario, emailUsuario, avatarUrl }: Proprieda
 
       <nav className="barra-lateral__navegacao">
         {itensMenu.map((item) => {
-          const ativo = verificarAtivo(item.link)
+          const temSubmenu = !!item.subitens
+          const ativo = verificarAtivo(item.link) || (item.subitens?.some((subitem) => verificarAtivo(subitem.link)) ?? false)
+          const aberto = !!submenusAbertos[item.link]
+
+          if (temSubmenu) {
+            return (
+              <div key={item.link} className="barra-lateral__item-grupo">
+                <button
+                  type="button"
+                  onClick={() => alternarSubmenu(item.link)}
+                  className={`barra-lateral__link barra-lateral__link--botao ${ativo ? 'barra-lateral__link--ativo' : ''}`}
+                  data-titulo={item.titulo}
+                  title={barraLateralRecolhida ? item.titulo : undefined}
+                >
+                  <span className="barra-lateral__icone">{item.icone}</span>
+                  <span className="barra-lateral__texto">{item.titulo}</span>
+                  {!barraLateralRecolhida && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className={`barra-lateral__seta ${aberto ? 'barra-lateral__seta--aberta' : ''}`}
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  )}
+                </button>
+
+                {/* Submenu visível quando expandido */}
+                {!barraLateralRecolhida && aberto && (
+                  <div className="barra-lateral__submenu">
+                    {item.subitens?.map((subitem) => {
+                      const subAtivo = verificarAtivo(subitem.link)
+                      return (
+                        <Link
+                          key={subitem.link}
+                          href={subitem.link}
+                          className={`barra-lateral__sublink ${subAtivo ? 'barra-lateral__sublink--ativo' : ''}`}
+                        >
+                          {subitem.titulo}
+                        </Link>
+                      )
+                    })}
+                  </div>
+                )}
+
+                {/* Submenu flutuante quando a Sidebar estiver recolhida */}
+                {barraLateralRecolhida && (
+                  <div className="barra-lateral__submenu-flutuante">
+                    <div className="barra-lateral__submenu-titulo">{item.titulo}</div>
+                    {item.subitens?.map((subitem) => {
+                      const subAtivo = verificarAtivo(subitem.link)
+                      return (
+                        <Link
+                          key={subitem.link}
+                          href={subitem.link}
+                          className={`barra-lateral__sublink ${subAtivo ? 'barra-lateral__sublink--ativo' : ''}`}
+                        >
+                          {subitem.titulo}
+                        </Link>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )
+          }
+
           return (
             <Link
               key={item.link}

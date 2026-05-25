@@ -218,3 +218,150 @@
 .barra-lateral--recolhida .barra-lateral__link:hover::after {
   opacity: 1;
 }
+
+/* ============================================================
+   ESTILOS DE SUBMENUS (ACCORDION & POPUP FLUTUANTE)
+   ============================================================ */
+
+/* Botão do item que abre submenu */
+button.barra-lateral__link--botao {
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Seta indicadora (chevron) */
+.barra-lateral__seta {
+  width: 16px;
+  height: 16px;
+  margin-left: auto;
+  color: var(--color-gray-400);
+  transition: transform var(--transition-normal);
+}
+
+.barra-lateral__link:hover .barra-lateral__seta {
+  color: var(--color-text-inverse);
+}
+
+.barra-lateral__seta--aberta {
+  transform: rotate(180deg);
+}
+
+/* Submenu expandido (modo accordion) */
+.barra-lateral__submenu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-left: calc(var(--space-4) + 20px + var(--space-2)); /* Alinha com o texto do link pai (padding + ícone + gap) */
+  margin-top: var(--space-1);
+  margin-bottom: var(--space-1);
+  animation: deslizarAbaixo var(--transition-normal) ease-out;
+}
+
+.barra-lateral__sublink {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-gray-400);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: var(--fw-medium);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.barra-lateral__sublink:hover {
+  color: var(--color-text-inverse);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.barra-lateral__sublink--ativo {
+  color: var(--color-text-inverse);
+  font-weight: var(--fw-semibold);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Submenu flutuante (modo recolhido) */
+.barra-lateral__item-grupo {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.barra-lateral--recolhida .barra-lateral__item-grupo {
+  position: relative;
+}
+
+.barra-lateral--recolhida .barra-lateral__submenu-flutuante {
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: 0;
+  background-color: var(--color-brand);
+  border: 1px solid var(--color-brand-mid);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) 0;
+  min-width: 170px;
+  box-shadow: var(--shadow-lg);
+  z-index: 40;
+  margin-left: var(--space-2);
+  flex-direction: column;
+  gap: var(--space-1);
+  animation: fadeEntrada 0.2s ease-out;
+}
+
+/* Exibe o submenu flutuante no hover na sidebar recolhida */
+.barra-lateral--recolhida .barra-lateral__item-grupo:hover .barra-lateral__submenu-flutuante {
+  display: flex;
+}
+
+/* Título superior do popover recolhido */
+.barra-lateral__submenu-titulo {
+  padding: var(--space-1) var(--space-4);
+  font-size: 11px;
+  font-weight: var(--fw-bold);
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: var(--space-1);
+}
+
+.barra-lateral--recolhida .barra-lateral__submenu-flutuante .barra-lateral__sublink {
+  padding: var(--space-2) var(--space-4);
+  font-size: 13px;
+  border-radius: 0;
+}
+
+/* Ocultar tooltip nativo nos itens que possuem submenus flutuantes na sidebar recolhida */
+.barra-lateral--recolhida .barra-lateral__item-grupo:hover .barra-lateral__link::after {
+  opacity: 0 !important;
+  display: none !important;
+}
+
+/* Animações Premium */
+@keyframes deslizarAbaixo {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeEntrada {
+  from {
+    opacity: 0;
+    transform: translateX(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
