@@ -9,7 +9,7 @@ import type {
   BlingNfeItem,
   BlingNfeParcela,
 } from './types'
-import { blingGetWithRetry } from './client'
+import { blingGetWithRetry, tryRefreshToken } from './client'
 
 type ClienteSupabase = SupabaseClient<Database>
 
@@ -113,6 +113,7 @@ async function processarNotaFiscal(
     situacao: d.situacao ?? null,
     numero: d.numero ?? null,
     serie: d.serie ?? null,
+    valor_nota: d.valorNota ?? null,
     data_emissao: d.dataEmissao ?? null,
     data_operacao: d.dataOperacao ?? null,
     contato_id: d.contato?.id ?? null,
@@ -174,15 +175,23 @@ async function enriquecerNfe(
 
   const { data: config } = await db
     .from('integracao_bling')
-    .select('access_token, expires_at')
+    .select('id, access_token, refresh_token, expires_at')
     .limit(1)
     .maybeSingle()
 
   if (!config?.access_token) return
-  if (config.expires_at && new Date(config.expires_at) <= new Date()) return
+
+  let token = config.access_token
+  const isExpired = config.expires_at && new Date(config.expires_at) <= new Date()
+  if (isExpired) {
+    if (!config.refresh_token) return
+    const novoToken = await tryRefreshToken({ id: config.id, refresh_token: config.refresh_token })
+    if (!novoToken) return
+    token = novoToken
+  }
 
   const endpoint = tipoNota === 'NFe' ? `/nfe/${id}` : `/nfce/${id}`
-  const resposta = await blingGetWithRetry(endpoint, config.access_token)
+  const resposta = await blingGetWithRetry(endpoint, token)
   const d = resposta?.data as BlingNotaFiscalDados | null
   if (!d) return
 
