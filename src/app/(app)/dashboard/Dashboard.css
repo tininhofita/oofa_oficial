@@ -816,3 +816,94 @@
   padding: var(--space-4) 0;
 }
 
+/* --- GRÁFICO DE BARRAS VERTICAIS ANUAL (EVOLUÇÃO DO FATURAMENTO) --- */
+.grafico-barras-verticais-anual {
+  display: flex;
+  flex-direction: column;
+  height: 240px;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.grafico-barras-verticais-anual__plot {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 200px;
+  border-bottom: 2px solid var(--color-border);
+  padding-bottom: var(--space-2);
+}
+
+.grafico-barras-verticais-anual__coluna {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.grafico-barras-verticais-anual__barra-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 90%;
+  width: 100%;
+  gap: var(--space-1);
+}
+
+.grafico-barras-verticais-anual__barra {
+  width: 36px;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: linear-gradient(to top, var(--color-primary), #818cf8);
+  transition: height var(--transition-slow) ease-out;
+  cursor: pointer;
+  position: relative;
+}
+
+.grafico-barras-verticais-anual__barra:hover {
+  background: linear-gradient(to top, var(--color-primary-active), var(--color-primary));
+}
+
+.grafico-barras-verticais-anual__barra:hover::after {
+  content: attr(data-valor);
+  position: absolute;
+  bottom: 105%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--color-gray-900);
+  color: var(--color-text-inverse);
+  font-size: 10px;
+  padding: 3px 6px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+  z-index: 10;
+}
+
+.grafico-barras-verticais-anual__rotulo {
+  font-size: 10px;
+  font-weight: var(--fw-bold);
+  color: var(--color-primary);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.grafico-barras-verticais-anual__legenda {
+  font-size: 10px;
+  font-weight: var(--fw-bold);
+  color: var(--color-text-secondary);
+}
+
+.dashboard-grafico__container--anual {
+  min-height: 240px;
+}
+
+@media (max-width: 768px) {
+  .grafico-barras-verticais-anual__barra {
+    width: 20px;
+  }
+}
+

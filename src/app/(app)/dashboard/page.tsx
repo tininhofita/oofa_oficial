@@ -36,6 +36,7 @@ interface NotaFiscal {
  * Exibe métricas de notas fiscais, fretes, gráficos de faturamento por natureza,
  * distribuição por tamanho de produto e produtos mais vendidos.
  * Possui filtros globais de período, situação e naturezas de operação (múltipla escolha).
+ * Inclui gráfico de faturamento consolidado anual posicionado abaixo dos cards.
  * Desenvolvido seguindo as regras de nomenclatura em Português BR.
  */
 export default function PaginaDashboardComercial() {
@@ -51,6 +52,7 @@ export default function PaginaDashboardComercial() {
 
   // Estados de dados e carregamento
   const [notasFiscais, definirNotasFiscais] = useState<NotaFiscal[]>([])
+  const [notasAnuais, definirNotasAnuais] = useState<any[]>([])
   const [naturezasCadastradas, definirNaturezasCadastradas] = useState<NaturezaOperacao[]>([])
   const [carregando, definirCarregando] = useState<boolean>(true)
   const [erro, definirErro] = useState<string | null>(null)
@@ -171,6 +173,43 @@ export default function PaginaDashboardComercial() {
         }
 
         definirNotasFiscais(todosDadosNotas)
+
+        // 3. Query de Notas Fiscais paginada para o faturamento anual (leve, sem itens)
+        let deAnual = 0
+        let todosDadosAnuais: any[] = []
+        const limiteLoteAnual = 1000
+        const anoAtual = new Date().getFullYear()
+        const inicioAno = `${anoAtual}-01-01 00:00:00`
+        const fimAno = `${anoAtual}-12-31 23:59:59`
+
+        while (true) {
+          let consultaAnual = clienteSupabase
+            .from('nfe')
+            .select('data_emissao, valor_nota, tipo_nota, situacao, natureza_operacao_id')
+            .gte('data_emissao', inicioAno)
+            .lte('data_emissao', fimAno)
+            .range(deAnual, deAnual + limiteLoteAnual - 1)
+
+          if (situacaoFiltro === 'autorizada') {
+            consultaAnual = consultaAnual.in('situacao', [5, 6, 7])
+          } else if (situacaoFiltro === 'cancelada') {
+            consultaAnual = consultaAnual.eq('situacao', 2)
+          } else if (situacaoFiltro === 'pendente') {
+            consultaAnual = consultaAnual.eq('situacao', 1)
+          }
+
+          const { data: dadosAnuais, error: erroAnual } = await consultaAnual
+
+          if (erroAnual) throw erroAnual
+          if (!dadosAnuais || dadosAnuais.length === 0) break
+
+          todosDadosAnuais = [...todosDadosAnuais, ...dadosAnuais]
+
+          if (dadosAnuais.length < limiteLoteAnual) break
+          deAnual += limiteLoteAnual
+        }
+
+        definirNotasAnuais(todosDadosAnuais)
       } catch (err: any) {
         console.error('Erro ao carregar dados do dashboard:', err)
         console.error('Detalhes do erro:', {
@@ -191,6 +230,17 @@ export default function PaginaDashboardComercial() {
   // Função auxiliar para formatar valores em Reais (BRL)
   const formatarMoeda = (valor: number) => {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor)
+  }
+
+  // Formatador monetário compacto (ex: R$ 12,5k ou R$ 1,2M)
+  const formatarValorCompacto = (valor: number) => {
+    if (valor >= 1000000) {
+      return `R$ ${(valor / 1000000).toFixed(1)}M`
+    }
+    if (valor >= 1000) {
+      return `R$ ${(valor / 1000).toFixed(1)}k`
+    }
+    return formatarMoeda(valor)
   }
 
   // Função auxiliar para extrair o tamanho da descrição do produto
@@ -223,6 +273,53 @@ export default function PaginaDashboardComercial() {
 
   const valorTotalFrete = notasFiltradas.reduce((total, n) => total + (Number(n.valor_frete) || 0), 0)
   const faturamentoConsolidado = totalNFeValor + totalNFCeValor
+
+  // --- FILTRAGEM DE NOTAS ANUAIS POR NATUREZAS SELECIONADAS ---
+  const notasAnuaisFiltradas = notasAnuais.filter((nota) => {
+    if (naturezasSelecionadas.length === 0) return true
+    const chave = nota.natureza_operacao_id ? String(nota.natureza_operacao_id) : 'sem-natureza'
+    return naturezasSelecionadas.includes(chave)
+  })
+
+  // --- CÁLCULO DE FATURAMENTO MENSAL DO ANO INTEIRO (CONSOLIDADO ANUAL) ---
+  const obterFaturamentoMensalAnual = () => {
+    const mapaMeses: Record<number, number> = {}
+    const nomesMeses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+
+    notasAnuaisFiltradas.forEach((nota) => {
+      if (!nota.data_emissao) return
+      // Criar a data considerando que o banco retorna a string TIMESTAMP sem timezone
+      // Ex: '2026-04-25T19:48:39' -> vamos extrair o mês diretamente pelo caractere para evitar discrepâncias de fuso
+      try {
+        const partesData = nota.data_emissao.split('-')
+        if (partesData.length >= 2) {
+          const mesIndex = Number(partesData[1]) - 1 // 1-12 para 0-11
+          if (mesIndex >= 0 && mesIndex <= 11) {
+            const valor = Number(nota.valor_nota) || 0
+            mapaMeses[mesIndex] = (mapaMeses[mesIndex] || 0) + valor
+          }
+        }
+      } catch (e) {
+        // Fallback robusto se falhar o split
+        const data = new Date(nota.data_emissao)
+        const mesIndex = data.getMonth()
+        const valor = Number(nota.valor_nota) || 0
+        mapaMeses[mesIndex] = (mapaMeses[mesIndex] || 0) + valor
+      }
+    })
+
+    return Object.entries(mapaMeses)
+      .map(([mesIndex, valor]) => ({
+        nome: nomesMeses[Number(mesIndex)],
+        index: Number(mesIndex),
+        valor
+      }))
+      .filter((item) => item.valor > 0) // Apenas meses com faturamento
+      .sort((a, b) => a.index - b.index) // Ordem cronológica
+  }
+
+  const faturamentoMensalAnual = obterFaturamentoMensalAnual()
+  const maiorFaturamentoMensalAnual = faturamentoMensalAnual.length > 0 ? Math.max(...faturamentoMensalAnual.map((m) => m.valor)) : 1
 
   // --- CÁLCULO DE FATURAMENTO POR NATUREZA DE OPERAÇÃO ---
   const obterFaturamentoPorNatureza = () => {
@@ -387,7 +484,7 @@ export default function PaginaDashboardComercial() {
           </select>
         </div>
 
-        {/* Novo Filtro Global Multi-Select de Natureza de Operação */}
+        {/* Filtro Global Multi-Select de Natureza de Operação */}
         <div className="painel-filtros__grupo painel-filtros__grupo--multi">
           <label className="painel-filtros__label">Natureza de Operação</label>
           <div className="dropdown-multi">
@@ -589,6 +686,43 @@ export default function PaginaDashboardComercial() {
                 <span className="card-metrica__badge card-metrica__badge--indigo">{notasFiltradas.length} notas no total</span>
                 <span className="card-metrica__diferenca-texto">NF-e + NFC-e</span>
               </div>
+            </div>
+          </section>
+
+          {/* NOVO: Gráfico de Faturamento Consolidado Anual */}
+          <section className="bloco-visualizacao dashboard-comercial__faturamento-anual">
+            <div className="bloco-visualizacao__topo">
+              <h2 className="bloco-visualizacao__titulo">Evolução do Faturamento Mensal ({new Date().getFullYear()})</h2>
+            </div>
+            <div className="dashboard-grafico__container dashboard-grafico__container--anual">
+              {faturamentoMensalAnual.length === 0 ? (
+                <div className="dashboard-grafico__vazio">
+                  Nenhum faturamento registrado neste ano com as naturezas e situações selecionadas.
+                </div>
+              ) : (
+                <div className="grafico-barras-verticais-anual">
+                  <div className="grafico-barras-verticais-anual__plot">
+                    {faturamentoMensalAnual.map((item, index) => {
+                      const porcentagem = (item.valor / maiorFaturamentoMensalAnual) * 100
+                      return (
+                        <div key={index} className="grafico-barras-verticais-anual__coluna">
+                          <div className="grafico-barras-verticais-anual__barra-container">
+                            <span className="grafico-barras-verticais-anual__rotulo">
+                              {formatarValorCompacto(item.valor)}
+                            </span>
+                            <div
+                              className="grafico-barras-verticais-anual__barra"
+                              style={{ height: `${porcentagem}%` }}
+                              data-valor={formatarMoeda(item.valor)}
+                            />
+                          </div>
+                          <span className="grafico-barras-verticais-anual__legenda">{item.nome}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </section>
 
