@@ -169,3 +169,34 @@ export interface BlingNotaFiscalConsumidorDados {
     }
   }
 }
+
+// --- Contas a Pagar ---
+
+export interface BlingContasPagarResumida {
+  id: number
+  situacao: number
+  vencimento: string
+  valor: number
+  contato: { id: number }
+  formaPagamento: { id: number }
+}
+
+export interface BlingContasPagarDados {
+  id: number
+  situacao: number
+  vencimento: string
+  valor: number
+  contato: { id: number }
+  formaPagamento: { id: number }
+  saldo: number
+  dataEmissao: string
+  vencimentoOriginal: string
+  numeroDocumento?: string
+  competencia: string
+  historico?: string
+  numeroBanco?: string
+  portador?: { id: number }
+  categoria?: { id: number }
+  ocorrencia?: { tipo: number }
+}
+

@@ -573,4 +573,43 @@
   opacity: 0.6;
 }
 
+/* Abas de Navegação Premium */
+.importacao__abas {
+  display: flex;
+  gap: var(--space-2);
+  border-bottom: 2px solid var(--color-border);
+  margin-bottom: var(--space-2);
+  padding-bottom: 2px;
+}
+
+.importacao__aba-botao {
+  padding: var(--space-3) var(--space-6);
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--color-text-secondary);
+  font-weight: var(--fw-semibold, 600);
+  font-size: var(--fs-text-sm);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.importacao__aba-botao:hover {
+  color: var(--color-text-primary);
+}
+
+.importacao__aba-botao--ativa {
+  color: var(--color-primary, #0284c7);
+  border-bottom-color: var(--color-primary, #0284c7);
+}
+
+/* Detalhe lateral do Card de Contas a Pagar */
+.importacao__card--contas::before {
+  background: #f97316; /* Laranja financeiro vibrante */
+}
+
+
 

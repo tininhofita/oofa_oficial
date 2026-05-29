@@ -135,6 +135,151 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Sincronização exclusiva de Contas a Pagar
+    if (tabela === 'contas_pagar') {
+      try {
+        const dataInicioStr = url.searchParams.get('dataInicio')
+        const dataFimStr = url.searchParams.get('dataFim')
+        const tipoData = url.searchParams.get('tipoData') || 'vencimento' // 'vencimento', 'emissao', 'pagamento'
+
+        if (!dataInicioStr || !dataFimStr) {
+          return NextResponse.json({ error: 'Parâmetros dataInicio e dataFim são obrigatórios.' }, { status: 400 })
+        }
+
+        // Construção do filtro de datas conforme Swagger do Bling V3 (apenas data simples YYYY-MM-DD)
+        let queryParams = ''
+        if (tipoData === 'emissao') {
+          queryParams = `dataEmissaoInicial=${dataInicioStr}&dataEmissaoFinal=${dataFimStr}`
+        } else if (tipoData === 'pagamento') {
+          queryParams = `dataPagamentoInicial=${dataInicioStr}&dataPagamentoFinal=${dataFimStr}`
+        } else {
+          queryParams = `dataVencimentoInicial=${dataInicioStr}&dataVencimentoFinal=${dataFimStr}`
+        }
+
+        // 1. Listagem resumida de contas a pagar
+        const listagem = await buscarTodasPaginas(`/contas/pagar?${queryParams}`, token)
+        const listagemUnica = Array.from(new Map(listagem.map((c) => [c.id, c])).values())
+
+        if (estimar) {
+          const totalCount = listagemUnica.length
+          return NextResponse.json({
+            ok: true,
+            estimativa: {
+              total_listadas: totalCount,
+              tempo_estimado_segundos: Math.round(totalCount * 0.25)
+            }
+          })
+        }
+
+        const stats = {
+          contas_listadas: listagemUnica.length,
+          contas_importadas: 0,
+          contas_atualizadas: 0,
+          contas_ignoradas: 0,
+          erros: [] as string[]
+        }
+
+        // 2. Detalhar e Gravar cada conta a pagar
+        for (let i = 0; i < listagemUnica.length; i++) {
+          const contaResumida = listagemUnica[i]
+          try {
+            // Busca o detalhe completo da conta a pagar no Bling
+            const res = await blingGetWithRetry(`/contas/pagar/${contaResumida.id}`, token)
+            const c = res?.data ?? res
+            if (!c?.id) continue
+
+            // 2.1 Mapeamento e Gravação do Contato vinculado
+            if (c.contato?.id) {
+              try {
+                // Se o contato da conta a pagar não tem nome (comum na listagem), busca o cadastro completo no Bling
+                let dadosContato = c.contato
+                if (!dadosContato.nome) {
+                  const resp = await blingGetWithRetry(`/contatos/${dadosContato.id}`, token)
+                  if (resp?.data?.nome) dadosContato = { ...dadosContato, ...resp.data }
+                }
+                const contatoMapeado = mapearContato(dadosContato)
+                if (contatoMapeado) {
+                  const payload = Object.fromEntries(
+                    Object.entries(contatoMapeado).filter(([, v]) => v !== null)
+                  )
+                  await supabase.from('contatos').upsert(payload, { onConflict: 'id' })
+                }
+              } catch { /* best-effort */ }
+            }
+
+            // 2.2 Prepara os dados para salvar
+            const dadosConta = {
+              id: c.id,
+              bling_evento_id: null,
+              situacao: c.situacao ?? null,
+              vencimento: validarDataISO(c.vencimento),
+              valor: c.valor ?? null,
+              contato_id: c.contato?.id || null,
+              forma_pagamento_id: c.formaPagamento?.id || null,
+              saldo: c.saldo ?? null,
+              data_emissao: validarDataISO(c.dataEmissao),
+              vencimento_original: validarDataISO(c.vencimentoOriginal),
+              numero_documento: c.numeroDocumento || null,
+              competencia: validarDataISO(c.competencia),
+              historico: c.historico || null,
+              numero_banco: c.numeroBanco || null,
+              portador_id: c.portador?.id || null,
+              categoria_id: c.categoria?.id || null,
+              ocorrencia_tipo: c.ocorrencia?.tipo ?? null,
+              atualizado_em: agora
+            }
+
+            // 2.3 Estatísticas de importação, atualização e ignoradas
+            const { data: contaExistente } = await supabase
+              .from('bling_contas_pagar')
+              .select('situacao, valor')
+              .eq('id', c.id)
+              .maybeSingle()
+
+            const jaExiste = Boolean(contaExistente)
+            let deveGravar = true
+
+            if (jaExiste) {
+              const situacaoIgual = contaExistente?.situacao === (c.situacao ?? null)
+              const valorIgual = Number(contaExistente?.valor) === Number(c.valor ?? 0)
+
+              if (situacaoIgual && valorIgual) {
+                deveGravar = false
+                stats.contas_ignoradas++
+              } else {
+                stats.contas_atualizadas++
+              }
+            } else {
+              stats.contas_importadas++
+            }
+
+            if (deveGravar) {
+              const { error: errConta } = await supabase
+                .from('bling_contas_pagar')
+                .upsert(dadosConta, { onConflict: 'id' })
+
+              if (errConta) {
+                stats.erros.push(`Falha no upsert da conta ${c.id}: ${errConta.message}`)
+              }
+            }
+          } catch (err: any) {
+            stats.erros.push(`Exceção ao processar conta a pagar ${contaResumida.id}: ${err.message}`)
+          }
+
+          // Delay de 250ms por conta para rate limit
+          await sleep(250)
+        }
+
+        return NextResponse.json({
+          ok: true,
+          stats,
+          syncedAt: agora
+        })
+      } catch (err: any) {
+        return NextResponse.json({ error: `Falha ao sincronizar contas a pagar: ${err.message}` }, { status: 500 })
+      }
+    }
+
     const dataInicioStr = url.searchParams.get('dataInicio')
     const dataFimStr = url.searchParams.get('dataFim')
     const tipoNotaStr = url.searchParams.get('tipoNota') || 'todas' // 'nfe', 'nfce', 'todas'
