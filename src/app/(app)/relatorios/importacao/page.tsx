@@ -143,7 +143,7 @@ export default function ImportacaoPage() {
   const [paginaAtualCP, setPaginaAtualCP] = useState(1)
   const [totalContasFiltradas, setTotalContasFiltradas] = useState(0)
 
-  const [ultimoRegistroCP, setUltimoRegistroCP] = useState<{ id: number; data: string; valor: number } | null>(null)
+  const [ultimoRegistroCP, setUltimoRegistroCP] = useState<{ id: number; data: string; valor: number; numero_documento: string } | null>(null)
   const [contas, setContas] = useState<any[]>([])
   const [buscaCP, setBuscaCP] = useState('')
   const [filtroSituacaoCP, setFiltroSituacaoCP] = useState('todos')
